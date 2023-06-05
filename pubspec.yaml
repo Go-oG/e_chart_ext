@@ -1,0 +1,35 @@
+name: e_chart_ext
+description: eChart extention
+version: 0.0.1
+homepage: https://github.com/Go-oG/xchart_ext
+
+environment:
+  sdk: '>=2.19.4 <3.0.0'
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  vector_math: ^2.1.4
+  chart_xutil: ^1.0.4
+  dart_dagre: ^0.0.1
+  uuid: ^3.0.6
+  ml_linalg: ^13.11.30
+  scidart: ^0.0.2-dev.12
+ # e_chart: ^0.0.1
+  e_chart:
+    path: ../e_chart
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
