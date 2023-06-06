@@ -58,10 +58,10 @@ class TreeMapSeries extends RectSeries {
     super.height,
     super.tooltip,
     super.animation,
-    super.enableClick=true,
-    super.enableDrag=true,
+    super.enableClick = true,
+    super.enableDrag = true,
     super.enableHover,
-    super.enableScale=true,
+    super.enableScale = true,
     super.clip,
     super.z,
   }) : super(xAxisIndex: -1, yAxisIndex: -1, calendarIndex: -1, parallelIndex: -1, polarAxisIndex: -1, radarIndex: -1) {
@@ -71,6 +71,6 @@ class TreeMapSeries extends RectSeries {
   }
 
   void back() {
-    change(Command(commandBack));
+    notifyChange(commandBack);
   }
 }
