@@ -4,6 +4,7 @@ import 'layout/layout.dart';
 import 'layout/square.dart';
 import 'node.dart';
 import '../model/tree_data.dart';
+
 ///树图
 class TreeMapSeries extends RectSeries {
   static const int commandBack = 1;
@@ -57,7 +58,10 @@ class TreeMapSeries extends RectSeries {
     super.height,
     super.tooltip,
     super.animation,
-    super.touch,
+    super.enableClick=true,
+    super.enableDrag=true,
+    super.enableHover,
+    super.enableScale=true,
     super.clip,
     super.z,
   }) : super(xAxisIndex: -1, yAxisIndex: -1, calendarIndex: -1, parallelIndex: -1, polarAxisIndex: -1, radarIndex: -1) {

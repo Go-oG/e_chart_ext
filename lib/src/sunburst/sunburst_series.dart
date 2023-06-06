@@ -2,6 +2,7 @@ import 'package:e_chart/e_chart.dart';
 
 import 'layout.dart';
 import '../model/tree_data.dart';
+
 // 半径差值函数
 typedef RadiusDiffFun = SNumber Function(int deep, int maxDeep, num radius);
 
@@ -52,7 +53,10 @@ class SunburstSeries extends RectSeries {
     super.height,
     super.tooltip,
     super.animation,
-    super.touch,
+    super.enableClick,
+    super.enableDrag,
+    super.enableHover,
+    super.enableScale,
     super.clip,
     super.z,
   }) : super(xAxisIndex: -1, yAxisIndex: -1, polarAxisIndex: -1, parallelIndex: -1, calendarIndex: -1, radarIndex: -1);

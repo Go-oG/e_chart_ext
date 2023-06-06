@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 
 import 'graph_series.dart';
 
-class GraphView extends ChartView {
-  final GraphSeries series;
-
-  GraphView(this.series);
+class GraphView extends SeriesView<GraphSeries> {
+  GraphView(super.series);
 
   RectGesture gesture = RectGesture();
 

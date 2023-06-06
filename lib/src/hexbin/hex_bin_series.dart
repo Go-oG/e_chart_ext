@@ -1,4 +1,3 @@
-
 import 'package:e_chart/e_chart.dart';
 
 import 'hex_bin_node.dart';
@@ -10,6 +9,9 @@ class HexbinSeries extends RectSeries {
   List<HexbinData> data;
   Fun1<HexbinNode, AreaStyle> styleFun;
   Fun1<HexbinNode, LabelStyle>? labelStyleFun;
+
+  ///半径函数(可单独对某一个节点设置其大小)
+  Fun1<HexbinNode, num?>? radiusFun;
   bool clock = false;
 
   HexbinSeries(
@@ -26,7 +28,10 @@ class HexbinSeries extends RectSeries {
     super.animation,
     super.clip,
     super.tooltip,
-    super.touch,
+    super.enableClick,
+    super.enableDrag,
+    super.enableHover,
+    super.enableScale,
     super.z,
   }) : super(
           coordSystem: null,

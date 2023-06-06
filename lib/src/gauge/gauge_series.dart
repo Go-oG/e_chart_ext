@@ -25,7 +25,10 @@ class GaugeSeries extends RectSeries {
     super.animation,
     super.clip,
     super.tooltip,
-    super.touch,
+    super.enableClick,
+    super.enableDrag,
+    super.enableHover,
+    super.enableScale,
     super.z,
   }) : super(
           coordSystem: null,

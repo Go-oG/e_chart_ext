@@ -6,12 +6,9 @@ import 'package:flutter/material.dart';
 import 'hex_bin_node.dart';
 import 'hex_bin_series.dart';
 
-class HexbinView extends ChartView {
-  final HexbinSeries series;
-
+class HexbinView extends SeriesView<HexbinSeries> {
   List<HexbinNode> nodeList = [];
-
-  HexbinView(this.series) {
+  HexbinView(super.series) {
     for (var data in series.data) {
       nodeList.add(HexbinNode(data));
     }

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:chart_xutil/chart_xutil.dart';
 
 import 'package:e_chart/e_chart.dart';
@@ -10,14 +9,11 @@ import 'pack_series.dart';
 import '../model/tree_data.dart';
 
 class PackView extends SeriesView<PackSeries> {
-  final RectGesture gesture = RectGesture();
   PackNode root = PackNode(null, TreeData(0, []), value: 0);
 
   double tx = 0;
   double ty = 0;
   double scale = 1;
-
-  Offset lastDragOffset = Offset.zero;
 
   ChartTween? tween;
 
@@ -27,7 +23,6 @@ class PackView extends SeriesView<PackSeries> {
   PackView(super.series);
 
   void _handleSelect(Offset offset) {
-    offset = toLocalOffset(offset);
     PackNode? clickNode = findNode(offset);
     if (clickNode == null || clickNode == root) {
       return;
@@ -93,89 +88,39 @@ class PackView extends SeriesView<PackSeries> {
     return null;
   }
 
+  //TODO 待完成
   void _handleCancelSelect() {}
 
   @override
-  void onAttach() {
-    super.onAttach();
-    context.addGesture(gesture);
-    _initGesture();
-  }
-
-  void _initGesture() {
-    if (Platform.isIOS || Platform.isAndroid) {
-      gesture.click = (e) {
-        _handleSelect(e.globalPosition);
-      };
-    }
-    gesture.hoverStart = (e) {
-      _handleSelect(e.globalPosition);
-    };
-    gesture.hoverMove = (e) {
-      _handleSelect(e.globalPosition);
-    };
-    gesture.hoverEnd = (e) {
-      _handleCancelSelect();
-    };
-    if (context.config.dragType == DragType.longPress) {
-      gesture.longPressMove = (e) {
-        var dx = e.offsetFromOrigin.dx - lastDragOffset.dx;
-        var dy = e.offsetFromOrigin.dy - lastDragOffset.dy;
-        lastDragOffset = e.offsetFromOrigin;
-        tx += dx;
-        ty += dy;
-        invalidate();
-      };
-      gesture.longPressEnd = (e) {
-        lastDragOffset = Offset.zero;
-      };
-      gesture.longPressCancel = () {
-        lastDragOffset = Offset.zero;
-      };
-    } else {
-      dragStart(e) {
-        lastDragOffset = e.globalPosition;
-      }
-
-      dragMove(e) {
-        var dx = e.globalPosition.dx - lastDragOffset.dx;
-        var dy = e.globalPosition.dy - lastDragOffset.dy;
-        lastDragOffset = e.globalPosition;
-        tx += dx;
-        ty += dy;
-        invalidate();
-      }
-
-      dragCancel() {
-        lastDragOffset = Offset.zero;
-      }
-
-      gesture.horizontalDragStart = dragStart;
-      gesture.horizontalDragMove = dragMove;
-      gesture.horizontalDragEnd = (e) {
-        dragCancel();
-      };
-      gesture.horizontalDragCancel = dragCancel;
-      gesture.verticalDragStart = dragStart;
-      gesture.verticalDragMove = dragMove;
-      gesture.verticalDragEnd = (e) {
-        dragCancel();
-      };
-      gesture.verticalDragCancel = dragCancel;
-    }
+  void onClick(Offset offset) {
+    _handleSelect(offset);
   }
 
   @override
-  void onDetach() {
-    context.removeGesture(gesture);
-    super.onDetach();
+  void onHoverStart(Offset offset) {
+    _handleSelect(offset);
+  }
+
+  @override
+  void onHoverMove(Offset offset, Offset last) {
+    _handleSelect(offset);
+  }
+
+  @override
+  void onHoverEnd() {
+    _handleCancelSelect();
+  }
+
+  @override
+  void onDragMove(Offset offset, Offset diff) {
+    tx += diff.dx;
+    ty += diff.dy;
+    invalidate();
   }
 
   @override
   void onLayout(double left, double top, double right, double bottom) {
     super.onLayout(left, top, right, bottom);
-    gesture.rect = globalAreaBound;
-
     PackNode node = PackNode.fromPackData(series.data);
     node.sum((p0) => p0.value);
     List<PackNode> leafNodes = node.leaves();

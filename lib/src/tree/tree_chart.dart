@@ -5,16 +5,13 @@ import 'package:e_chart/e_chart.dart';
 import 'node.dart';
 import 'tree_series.dart';
 import '../model/tree_data.dart';
-class TreeView extends  ChartView {
-  final TreeSeries series;
+
+//TODO 绘制待完成
+class TreeView extends SeriesView<TreeSeries> {
   late TreeLayoutNode _rootNode;
   final List<TreeLayoutNode> _nodeList = [];
-
-  TreeView(this.series);
-
-  RectGesture gesture = RectGesture();
+  TreeView(super.series);
   Offset transOffset = Offset.zero;
-  Offset moveOffset = Offset.zero;
 
   @override
   void onAttach() {
@@ -25,64 +22,23 @@ class TreeView extends  ChartView {
     series.layout.layoutUpdate = () {
       invalidate();
     };
-    initListener();
   }
 
-  void initListener() {
-    context.addGesture(gesture);
-    if (context.config.dragType == DragType.longPress) {
-      gesture.longPressMove = (e) {
-        var dx = e.offsetFromOrigin.dx - moveOffset.dx;
-        var dy = e.offsetFromOrigin.dy - moveOffset.dy;
-        moveOffset = e.offsetFromOrigin;
-        transOffset = transOffset.translate(dx, dy);
-        invalidate();
-      };
-      gesture.longPressEnd = (e) {
-        cancelDrag();
-      };
-      gesture.longPressCancel = cancelDrag;
-    } else {
-      gesture.horizontalDragStart = (e) {
-        moveOffset = e.globalPosition;
-      };
-      gesture.horizontalDragMove = (e) {
-        var dx = e.globalPosition.dx - moveOffset.dx;
-        var dy = e.globalPosition.dy - moveOffset.dy;
-        moveOffset = e.globalPosition;
-        transOffset = transOffset.translate(dx, dy);
-        invalidate();
-      };
-      gesture.horizontalDragEnd = (e) {
-        cancelDrag();
-      };
-      gesture.horizontalDragCancel = cancelDrag;
-
-      gesture.verticalDragStart = (e) {
-        moveOffset = e.globalPosition;
-      };
-      gesture.verticalDragMove = (e) {
-        var dx = e.globalPosition.dx - moveOffset.dx;
-        var dy = e.globalPosition.dy - moveOffset.dy;
-        moveOffset = e.globalPosition;
-        transOffset = transOffset.translate(dx, dy);
-        invalidate();
-      };
-      gesture.verticalDragEnd = (e) {
-        cancelDrag();
-      };
-      gesture.verticalDragCancel = cancelDrag;
-    }
+  @override
+  void onDragMove(Offset offset, Offset diff) {
+    transOffset = transOffset.translate(diff.dx, diff.dy);
+    invalidate();
   }
 
-  void cancelDrag() {
-    moveOffset = Offset.zero;
+  @override
+  void onClick(Offset offset) {
+    // TODO: 找到点击节点
+
   }
 
   @override
   void onLayout(double left, double top, double right, double bottom) {
     super.onLayout(left, top, right, bottom);
-    gesture.rect = globalAreaBound;
     _rootNode = toTree<TreeData, TreeLayoutNode>(series.data, (p0) => p0.children, (p0, p1) => TreeLayoutNode(p0, p1));
     _nodeList.clear();
     _nodeList.addAll(_rootNode.descendants());

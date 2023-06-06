@@ -12,16 +12,16 @@ import 'sort.dart';
 ///Ref:https://github.com/d3/d3-sankey/blob/master/src/sankey.js
 class SankeyLayout {
   /// 整个视图区域坐标坐标
-  double _left = 0, _top = 0, _right = 1, _bottom = 1;
-  double _nodeWidth = 24; // nodeWidth
+  double left = 0, top = 0, right = 1, bottom = 1;
+  double _nodeWidth = 24; 
   double _nodeGap = 0;
   SankeyAlign _align = const JustifyAlign();
   NodeSort? _nodeSort;
   LinkSort? _linkSort;
   int _iterations = 6;
 
-  final List<SankeyNode> _nodes = [];
-  final List<SankeyLink> _links = [];
+  List<SankeyNode> _nodes = [];
+  List<SankeyLink> _links = [];
 
   SankeyLayout(SankeySeries series) {
     _nodeWidth = series.nodeWidth;
@@ -32,14 +32,13 @@ class SankeyLayout {
     _iterations = series.iterationCount;
   }
 
-  void layout(double width, double height, List<SankeyData> nodeList, List<SankeyLinkData> linkList) {
-    _left = 0;
-    _top = 0;
-    _right = width;
-    _bottom = height;
-    _nodes.clear();
-    _links.clear();
-
+  void doLayout(double width, double height, List<SankeyData> nodeList, List<SankeyLinkData> linkList) {
+    left = 0;
+    top = 0;
+    right = width;
+    bottom = height;
+    _nodes = [];
+    _links = [];
     _nodes.addAll(buildNodes(nodeList, linkList, 0));
     _links.addAll(buildLink(_nodes, linkList));
 
@@ -248,13 +247,13 @@ class SankeyLayout {
 
   List<List<SankeyNode>> _computeNodeLayers(List<SankeyNode> nodes) {
     int x = _findMaxDeep(nodes) + 1;
-    double kx = (_right - _left - _nodeWidth) / (x - 1);
+    double kx = (right - left - _nodeWidth) / (x - 1);
 
     List<List<SankeyNode>> columns = List.generate(x, (index) => []);
     for (var node in nodes) {
       int i = m.max(0, m.min(x - 1, _align.align(node, x)));
       node.layerIndex = i;
-      node.left = _left + i * kx;
+      node.left = left + i * kx;
       node.right = node.left + _nodeWidth;
       columns[i].add(node);
     }
@@ -276,14 +275,14 @@ class SankeyLayout {
         v += e2.value!;
       }
 
-      double t = (_bottom - _top - (cl - 1) * _nodeGap) / v;
+      double t = (bottom - top - (cl - 1) * _nodeGap) / v;
       if (t < ky) {
         ky = t;
       }
     }
 
     for (var nodes in columns) {
-      double y = _top;
+      double y = top;
       for (var node in nodes) {
         node.top = y;
         node.bottom = y + node.value! * ky;
@@ -293,7 +292,7 @@ class SankeyLayout {
         }
       }
 
-      y = (_bottom - y + _nodeGap) / (nodes.length + 1);
+      y = (bottom - y + _nodeGap) / (nodes.length + 1);
       for (int i = 0; i < nodes.length; ++i) {
         var node = nodes[i];
         node.top += y * (i + 1);
@@ -314,7 +313,7 @@ class SankeyLayout {
       }
     }
     double minNodeGap = 8;
-    _nodeGap = m.min(minNodeGap, (_bottom - _top) / (maxLen - 1));
+    _nodeGap = m.min(minNodeGap, (bottom - top) / (maxLen - 1));
 
     _initializeNodeBreadths(columns);
     for (int i = 0; i < _iterations; ++i) {
@@ -390,8 +389,8 @@ class SankeyLayout {
     var subject = nodes[i];
     _resolveCollisionsBottomToTop(nodes, subject.top - _nodeGap, i - 1, alpha);
     _resolveCollisionsTopToBottom(nodes, subject.bottom + _nodeGap, i + 1, alpha);
-    _resolveCollisionsBottomToTop(nodes, _bottom, nodes.length - 1, alpha);
-    _resolveCollisionsTopToBottom(nodes, _top, 0, alpha);
+    _resolveCollisionsBottomToTop(nodes, bottom, nodes.length - 1, alpha);
+    _resolveCollisionsTopToBottom(nodes, top, 0, alpha);
   }
 
   // Push any overlapping nodes down.

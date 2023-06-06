@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:e_chart/e_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -8,35 +6,36 @@ import 'layout_node.dart';
 import 'sankey_series.dart';
 
 /// 桑基图
-class SankeyView extends  ChartView {
-  final SankeySeries series;
+class SankeyView extends SeriesView<SankeySeries> {
   List<SankeyNode> _nodeList = [];
   List<SankeyLink> _linkList = [];
   SankeyLink? _link;
   SankeyNode? _node;
 
-  final RectGesture _gesture = RectGesture();
+  SankeyView(super.series);
 
-  SankeyView(this.series) {
-    if (Platform.isAndroid || Platform.isIOS) {
-      _gesture.click = (e) {
-        _handleSelect(e.globalPosition);
-      };
-    }
-    _gesture.hoverStart = (e) {
-      _handleSelect(e.globalPosition);
-    };
-    _gesture.hoverMove = (e) {
-      _handleSelect(e.globalPosition);
-    };
-    _gesture.hoverEnd = (e) {
-      _handleCancel();
-    };
+  @override
+  void onClick(Offset offset) {
+    _handleSelect(offset);
   }
 
-  void _handleSelect(Offset offset) {
-    offset = toLocalOffset(offset);
-    dynamic eventNode = findEventNode(offset);
+  @override
+  void onHoverStart(Offset offset) {
+    _handleSelect(offset);
+  }
+
+  @override
+  void onHoverMove(Offset offset, Offset last) {
+    _handleSelect(offset);
+  }
+
+  @override
+  void onHoverEnd() {
+    _handleCancel();
+  }
+
+  void _handleSelect(Offset local) {
+    dynamic eventNode = findEventNode(local);
     if (eventNode == null) {
       _handleCancel();
       return;
@@ -93,18 +92,6 @@ class SankeyView extends  ChartView {
       _resetDataStatus();
       invalidate();
     }
-  }
-
-  @override
-  void onAttach() {
-    super.onAttach();
-    context.addGesture(_gesture);
-  }
-
-  @override
-  void onDetach() {
-    context.removeGesture(_gesture);
-    super.onDetach();
   }
 
   dynamic findEventNode(Offset offset) {
@@ -177,9 +164,8 @@ class SankeyView extends  ChartView {
   @override
   void onLayout(double left, double top, double right, double bottom) {
     super.onLayout(left, top, right, bottom);
-    _gesture.rect = globalAreaBound;
     SankeyLayout layout = SankeyLayout(series);
-    layout.layout(width, height, series.nodes, series.links);
+    layout.doLayout(width, height, series.nodes, series.links);
     _nodeList = layout.nodes;
     _linkList = layout.links;
   }
@@ -201,5 +187,4 @@ class SankeyView extends  ChartView {
       style.drawPath(canvas, mPaint, link.path);
     }
   }
-
 }

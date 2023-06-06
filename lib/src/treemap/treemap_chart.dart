@@ -11,14 +11,12 @@ import 'treemap_series.dart';
 class TreeMapView extends SeriesView<TreeMapSeries> {
   late TreeMapNode rootNode;
   late LayoutHelper helper;
-  final RectGesture gesture = RectGesture();
 
   ///记录显示的层级
   final List<TreeMapNode> showStack = [];
   List<TreeMapNode> drawList = [];
   double tx = 0;
   double ty = 0;
-  Offset moveOffset = Offset.zero;
 
   ///记录当前画布坐标原点和绘图坐标原点的偏移量
   TreeMapView(super.series) {
@@ -28,84 +26,39 @@ class TreeMapView extends SeriesView<TreeMapSeries> {
   @override
   void onAttach() {
     super.onAttach();
-    initListener();
-  }
-
-  void initListener() {
     series.addListener((p0) {
       if (p0.code == TreeMapSeries.commandBack) {
         back();
         return;
       }
     });
-    context.addGesture(gesture);
-    gesture.click = _handleClick;
-    if (context.config.dragType == DragType.longPress) {
-      gesture.longPressMove = (e) {
-        Offset of = e.offsetFromOrigin;
-        var dx = of.dx - moveOffset.dx;
-        var dy = of.dy - moveOffset.dy;
-        moveOffset = of;
-        tx += dx;
-        ty += dy;
-        invalidate();
-      };
-      gesture.longPressEnd = (e) {
-        cancelDrag();
-      };
-      gesture.longPressCancel = cancelDrag;
-    } else {
-      gesture.horizontalDragStart = (e) {
-        moveOffset = e.globalPosition;
-      };
-      gesture.horizontalDragMove = (e) {
-        var dx = e.globalPosition.dx - moveOffset.dx;
-        var dy = e.globalPosition.dy - moveOffset.dy;
-        moveOffset = e.globalPosition;
-        tx += dx;
-        ty += dy;
-        invalidate();
-      };
-      gesture.horizontalDragEnd = (e) {
-        cancelDrag();
-      };
-      gesture.horizontalDragCancel = cancelDrag;
-      gesture.verticalDragStart = (e) {
-        moveOffset = e.globalPosition;
-      };
-      gesture.verticalDragMove = (e) {
-        var dx = e.globalPosition.dx - moveOffset.dx;
-        var dy = e.globalPosition.dy - moveOffset.dy;
-        moveOffset = e.globalPosition;
-        tx += dx;
-        ty += dy;
-        invalidate();
-      };
-      gesture.verticalDragEnd = (e) {
-        cancelDrag();
-      };
-      gesture.verticalDragCancel = cancelDrag;
-    }
-    if (context.config.scaleType == ScaleType.doubleTap) {
-      gesture.doubleClickCancel = () {
-        invalidate();
-      };
-    } else {
-      ///缩放
-    }
   }
 
-  void cancelDrag() {
-    moveOffset = Offset.zero;
+  @override
+  void onClick(Offset offset) {
+    handleClick(offset);
+  }
+
+  @override
+  void onDragMove(Offset offset, Offset diff) {
+    tx += diff.dx;
+    ty += diff.dy;
+    invalidate();
+  }
+
+  @override
+  void onScaleUpdate(Offset offset, double rotation, double scale, double hScale, double vScale, bool doubleClick) {
+    // TODO: 待实现
   }
 
   ///回退
-  void back() {}
+  void back() {
+    //TODO 待实现
+  }
 
   @override
   void onLayout(double left, double top, double right, double bottom) {
     super.onLayout(left, top, right, bottom);
-    gesture.rect = globalAreaBound;
     rootNode = toTree<TreeData, TreeMapNode>(series.data, (p0) => p0.children, (p0, p1) => TreeMapNode(p0, p1));
     rootNode.sum((p0) => p0.data.value);
     rootNode.removeWhere((p0) => p0.value <= 0, true);
@@ -200,8 +153,8 @@ class TreeMapView extends SeriesView<TreeMapSeries> {
   }
 
   ///处理点击事件
-  void _handleClick(NormalEvent e) {
-    Offset offset = toLocalOffset(e.globalPosition);
+  void handleClick(Offset local) {
+    Offset offset = local;
     TreeMapNode? clickNode = findClickNode(offset);
     if (clickNode == null) {
       debugPrint('无法找到点击节点');
@@ -255,8 +208,8 @@ class TreeMapView extends SeriesView<TreeMapSeries> {
     double rootArea2 = w * h / areaRadio;
     double scale = rootArea2 / rootArea;
     cw = rootSize.width * scale;
-   // ch = rootSize.height * scale;
-    ch =cw/(rootSize.width/rootSize.height);
+    // ch = rootSize.height * scale;
+    ch = cw / (rootSize.width / rootSize.height);
 
     if (cw < width || ch < height) {
       cw = width;

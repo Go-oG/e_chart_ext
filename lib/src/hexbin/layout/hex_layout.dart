@@ -14,6 +14,7 @@ abstract class HexbinLayout {
   static const Orientation _pointy = Orientation(_sqrt3, _sqrt3 / 2.0, 0.0, 3.0 / 2.0, _sqrt3 / 3.0, -1.0 / 3.0, 0.0, 2.0 / 3.0, 90);
   static const Orientation _flat = Orientation(3.0 / 2.0, 0.0, _sqrt3 / 2.0, _sqrt3, 2.0 / 3.0, 0.0, -1.0 / 3.0, _sqrt3 / 3.0, 0);
 
+  ///"中心点"的重心位置
   List<SNumber> center;
 
   ///是否为平角在上
@@ -45,7 +46,8 @@ abstract class HexbinLayout {
     Size size = Size.square(radius * 1);
     each(nodes, (node, i) {
       node.center = hexToPixel(_zeroCenter, node.hex, size);
-      node.shape = PositiveShape(center: node.center, r: radius, count: 6, angleOffset: angleOffset);
+      num r = series.radiusFun?.call(node) ?? radius;
+      node.shape = PositiveShape(center: node.center, r: r, count: 6, angleOffset: angleOffset);
     });
   }
 

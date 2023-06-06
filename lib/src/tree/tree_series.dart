@@ -2,6 +2,7 @@ import 'package:e_chart/e_chart.dart';
 import 'node.dart';
 import 'tree_layout.dart';
 import '../model/tree_data.dart';
+
 class TreeSeries extends RectSeries {
   TreeData data;
   TreeLayout<TreeLayoutNode> layout;
@@ -27,7 +28,10 @@ class TreeSeries extends RectSeries {
     super.height,
     super.tooltip,
     super.animation,
-    super.touch,
+    super.enableClick,
+    super.enableDrag=true,
+    super.enableHover,
+    super.enableScale,
     super.clip,
     super.z,
   }) : super(xAxisIndex: -1, yAxisIndex: -1, calendarIndex: -1, parallelIndex: -1, polarAxisIndex: -1, radarIndex: -1);

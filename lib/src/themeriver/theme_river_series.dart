@@ -25,7 +25,10 @@ class ThemeRiverSeries extends RectSeries {
     super.height,
     super.tooltip,
     super.animation,
-    super.touch,
+        super.enableClick,
+        super.enableDrag,
+        super.enableHover,
+        super.enableScale,
     super.clip,
     super.z,
   }) : super(

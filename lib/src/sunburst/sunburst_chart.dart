@@ -6,53 +6,36 @@ import 'layout.dart';
 import 'sunburst_series.dart';
 import 'sunburst_tween.dart';
 import '../model/tree_data.dart';
+
 /// 旭日图
-class SunburstView extends  ChartView {
-  final SunburstSeries series;
+class SunburstView extends SeriesView<SunburstSeries> {
   final SunburstLayout _layout = SunburstLayout();
-  late final SunburstNode root;
+  late SunburstNode root;
   late SunburstNode _drawRoot;
-  final RectGesture _gesture = RectGesture();
   SunburstNode? backNode;
 
-  SunburstView(this.series) {
-    root = toTree<TreeData, SunburstNode>(
-      series.data,
-      (p0) => p0.children,
-      (p0, p1) => SunburstNode(p0, p1, value: p1.value),
-      sort: (a, b) {
-        if (series.sort == Sort.empty) {
-          return 0;
-        }
-        if (series.sort == Sort.asc) {
-          return a.data.value.compareTo(b.data.value);
-        } else {
-          return b.data.value.compareTo(a.data.value);
-        }
-      },
-    );
-    root.sum((p0) => p0.data.value);
-    if (series.matchParent) {
-      root.each((node, index, startNode) {
-        if (node.hasChild) {
-          node.value = 0;
-        }
-        return false;
-      });
-      root.sum();
-    }
-    _gesture.click = (e) {
-      _handleClick(e);
-    };
-    _gesture.hoverMove = _handleHoverMove;
-    _gesture.hoverEnd = (e) {
-      //  _drawRoot.updateSelectStatus(false, mode: SelectedMode.all);
-      invalidate();
-    };
+  SunburstView(super.series);
+
+  @override
+  void onClick(Offset offset) {
+    _handleClick(offset);
   }
 
-  void _handleClick(NormalEvent e) {
-    Offset offset = toLocalOffset(e.globalPosition).translate(-width / 2, -height / 2);
+  @override
+  void onHoverStart(Offset offset) {
+    _handleHoverMove(offset);
+  }
+
+  @override
+  void onHoverMove(Offset offset, Offset last) {
+    _handleHoverMove(offset);
+  }
+
+  @override
+  void onHoverEnd() {}
+
+  void _handleClick(Offset local) {
+    Offset offset = local.translate(-width / 2, -height / 2);
     if (backNode != null) {
       Arc arc = backNode!.cur.arc;
       if (offset.inSector(arc.innerRadius, arc.outRadius, arc.startAngle, arc.sweepAngle)) {
@@ -75,9 +58,9 @@ class SunburstView extends  ChartView {
     _forward(clickNode!);
   }
 
-  void _handleHoverMove(NormalEvent e) {
-    Offset offset = toLocalOffset(e.globalPosition);
-    offset = offset.translate(-width / 2, -height / 2);
+  void _handleHoverMove(Offset local) {
+    Offset offset = local.translate(-width / 2, -height / 2);
+
     SunburstNode? node;
     _drawRoot.eachBefore((tmp, index, startNode) {
       Arc arc = tmp.cur.arc;
@@ -194,26 +177,59 @@ class SunburstView extends  ChartView {
 
   @override
   void onLayout(double left, double top, double right, double bottom) {
-    _gesture.rect = globalAreaBound;
+    super.onLayout(left, top, right, bottom);
+    convertData();
+    _layout.layout(series, root, root, width, height);
+    _drawRoot = root;
+  }
+
+  void convertData() {
+    root = toTree<TreeData, SunburstNode>(
+      series.data,
+      (p0) => p0.children,
+      (p0, p1) => SunburstNode(p0, p1, value: p1.value),
+      sort: (a, b) {
+        if (series.sort == Sort.empty) {
+          return 0;
+        }
+        if (series.sort == Sort.asc) {
+          return a.data.value.compareTo(b.data.value);
+        } else {
+          return b.data.value.compareTo(a.data.value);
+        }
+      },
+    );
+    root.sum((p0) => p0.data.value);
+    if (series.matchParent) {
+      root.each((node, index, startNode) {
+        if (node.hasChild) {
+          node.value = 0;
+        }
+        return false;
+      });
+      root.sum();
+    }
     root.leaves().forEach((element) {
       element.computeHeight(element);
     });
-    _layout.layout(series, root, root, width, height);
-    _drawRoot = root;
+  }
+
+  void runAnimator() {
     AnimatorProps? info = series.animation;
-    if (info != null) {
-      ChartDoubleTween tween = ChartDoubleTween.fromAnimator(info);
-      tween.addListener(() {
-        double v = tween.value;
-        _drawRoot.each((node, index, startNode) {
-          node.updatePath(series, v);
-          return false;
-        });
-        invalidate();
-      });
-      _oldTween = tween;
-      tween.start(context);
+    if (info == null) {
+      return;
     }
+    ChartDoubleTween tween = ChartDoubleTween.fromAnimator(info);
+    tween.addListener(() {
+      double v = tween.value;
+      _drawRoot.each((node, index, startNode) {
+        node.updatePath(series, v);
+        return false;
+      });
+      invalidate();
+    });
+    _oldTween = tween;
+    tween.start(context);
   }
 
   @override
@@ -237,7 +253,7 @@ class SunburstView extends  ChartView {
       return;
     }
     AreaStyle? style = series.areaStyleFun.call(node, null);
-   // style?.drawPath(canvas, mPaint, node.cur.shapePath!, colorOpacity: node.cur.alpha >= 1 ? null : node.cur.alpha);
+    // style?.drawPath(canvas, mPaint, node.cur.shapePath!, colorOpacity: node.cur.alpha >= 1 ? null : node.cur.alpha);
     style?.drawPath(canvas, mPaint, node.cur.shapePath!);
   }
 
@@ -261,12 +277,6 @@ class SunburstView extends  ChartView {
     }
     AreaStyle style = series.backStyle ?? const AreaStyle(color: Colors.grey);
     style.drawPath(canvas, mPaint, backNode!.cur.arc.toPath(true));
-  }
-
-  @override
-  void onAttach() {
-    super.onAttach();
-    context.gestureDispatcher.addGesture(_gesture);
   }
 
   @override
