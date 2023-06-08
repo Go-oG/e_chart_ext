@@ -4,7 +4,6 @@ import 'package:chart_xutil/chart_xutil.dart';
 import 'package:e_chart/e_chart.dart';
 import 'package:flutter/cupertino.dart';
 
-import '../../../model/chart_offset.dart';
 import '../../../model/graph/graph.dart';
 import '../../../model/graph/graph_node.dart';
 import '../../graph_layout.dart';
@@ -81,7 +80,7 @@ class RadialLayout extends GraphLayout {
   void runLayout(Context context, Graph graph, num width, num height) {
     var nodes = graph.nodes;
     if (nodes.isEmpty) {
-      onLayoutEnd();
+      notifyLayoutEnd();
       return;
     }
     LayoutProps props = LayoutProps();
@@ -91,7 +90,7 @@ class RadialLayout extends GraphLayout {
     if (nodes.length == 1) {
       nodes[0].x = props.center.dx;
       nodes[0].y = props.center.dy;
-      onLayoutEnd();
+      notifyLayoutEnd();
       return;
     }
 
@@ -177,6 +176,7 @@ class RadialLayout extends GraphLayout {
         num space = getNodeSpace(a);
         return max([size.width, size.height]) + space;
       }
+
       var params = RadialParam(
         nodes,
         nodeSizeFunc,
@@ -198,7 +198,7 @@ class RadialLayout extends GraphLayout {
       nodes[i].x = p.x + props.center.dx;
       nodes[i].y = p.y + props.center.dy;
     });
-    onLayoutEnd();
+    notifyLayoutEnd();
   }
 
   void runStep(LayoutProps props, num param) {

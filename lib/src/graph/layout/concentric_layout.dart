@@ -75,7 +75,7 @@ class ConcentricLayout extends GraphLayout {
 
   void runLayout(Context context, Graph graph, num width, num height) {
     if (graph.nodes.isEmpty) {
-      onLayoutEnd();
+      notifyLayoutEnd();
       return;
     }
     List<GraphNode> nodes = graph.nodes;
@@ -84,7 +84,7 @@ class ConcentricLayout extends GraphLayout {
     if (n == 1) {
       nodes[0].x = center.dx;
       nodes[0].y = center.dy;
-      onLayoutEnd();
+      notifyLayoutEnd();
       return;
     }
 
@@ -157,7 +157,7 @@ class ConcentricLayout extends GraphLayout {
         node.y = nc.dy;
       });
     });
-    onLayoutEnd();
+    notifyLayoutEnd();
   }
 
   @override

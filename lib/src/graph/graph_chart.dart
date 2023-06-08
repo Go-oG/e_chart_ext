@@ -18,12 +18,9 @@ class GraphView extends SeriesView<GraphSeries> {
         series.layout.doLayout(context, series.graph, width, height);
       }
     });
-    series.layout.layoutUpdate = () {
+    series.layout.addListener(() {
       invalidate();
-    };
-    series.layout.layoutEnd = () {
-      invalidate();
-    };
+    });
     context.addGesture(gesture);
     series.bindGesture(this, gesture);
   }

@@ -57,7 +57,7 @@ class GraphGridLayout extends GraphLayout {
   void runLayout(Context context, Graph graph, num width, num height) {
     int nodeCount = graph.nodes.length;
     if (nodeCount == 0) {
-      onLayoutEnd();
+      notifyLayoutEnd();
       return;
     }
     LayoutProps props = LayoutProps();
@@ -65,7 +65,7 @@ class GraphGridLayout extends GraphLayout {
     if (nodeCount == 1) {
       graph.nodes[0].x = props.begin.dx;
       graph.nodes[0].y = props.begin.dy;
-      onLayoutEnd();
+      notifyLayoutEnd();
       return;
     }
 
@@ -148,7 +148,7 @@ class GraphGridLayout extends GraphLayout {
       }
       computePosition(props, node);
     }
-    onLayoutEnd();
+    notifyLayoutEnd();
   }
 
   @override

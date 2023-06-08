@@ -1,16 +1,16 @@
 import 'dart:math';
 
 import 'package:e_chart/e_chart.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 
 import '../model/graph/graph.dart';
 import '../model/graph/graph_node.dart';
 
-abstract class GraphLayout {
-  VoidCallback? _layoutEnd;
-  ///用于实时更新布局变化
-  VoidCallback? _layoutUpdate;
-  //是否在工作线程中布局
+abstract class GraphLayout extends ValueNotifier<Command> {
+  static const int layoutEnd = 1;
+  static const int layoutUpdate = 2;
+
+  ///是否在工作线程中布局
   bool workerThread;
 
   ///节点大小获取优先级: Node.size>sizeFun>>nodeSize>default（8）
@@ -25,34 +25,23 @@ abstract class GraphLayout {
     this.nodeSpaceFun,
     this.sort,
     this.workerThread = false,
-  });
+  }) : super(Command(0));
 
-  set layoutEnd(VoidCallback c) => _layoutEnd = c;
-
-  set layoutUpdate(VoidCallback c) => _layoutUpdate = c;
-
-  void onLayoutEnd() {
-    if(!hasInterrupted){
-      _layoutEnd?.call();
+  void notifyLayoutEnd() {
+    if (!hasInterrupted) {
+      value = Command(layoutEnd);
     }
   }
 
-  void onLayoutUpdate() {
-    if(!hasInterrupted){
-      _layoutUpdate?.call();
+  void notifyLayoutUpdate() {
+    if (!hasInterrupted) {
+      value = Command(layoutUpdate);
     }
   }
 
   void doLayout(Context context, Graph graph, num width, num height);
 
-  void stopLayout() {
-
-  }
-
-  void dispose() {
-    _layoutEnd=null;
-    _layoutUpdate=null;
-  }
+  void stopLayout() {}
 
   ///给定一个节点返回节点的大小
   Size getNodeSize(GraphNode node) {

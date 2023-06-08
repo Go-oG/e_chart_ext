@@ -79,7 +79,7 @@ class RandomLayout extends GraphLayout {
         c--;
       }
     }
-    onLayoutEnd();
+    notifyLayoutEnd();
   }
 
   @override

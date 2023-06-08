@@ -5,7 +5,6 @@ import 'package:ml_linalg/axis.dart' as ml;
 import 'package:ml_linalg/matrix.dart';
 import 'package:scidart/numdart.dart' as sv;
 
-import '../../model/chart_offset.dart';
 import '../../model/graph/edge.dart';
 import '../../model/graph/graph.dart';
 import '../../model/graph/graph_node.dart';
@@ -51,14 +50,14 @@ class MDSLayout extends GraphLayout {
     clear();
     List<GraphNode> nodes = graph.nodes;
     if (nodes.isEmpty) {
-      onLayoutEnd();
+      notifyLayoutEnd();
       return;
     }
     Offset centerOffset = Offset(center[0].convert(width), center[1].convert(height));
     if (nodes.length == 1) {
       nodes[0].x = centerOffset.dx;
       nodes[0].y = centerOffset.dy;
-      onLayoutEnd();
+      notifyLayoutEnd();
       return;
     }
 
@@ -94,7 +93,7 @@ class MDSLayout extends GraphLayout {
       node.x = p.x + centerOffset.dx;
       node.y = p.y + centerOffset.dy;
     }
-    onLayoutEnd();
+    notifyLayoutEnd();
   }
 
   @override

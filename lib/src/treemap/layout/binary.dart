@@ -12,10 +12,13 @@ class BinaryLayout extends TreemapLayout {
   @override
   void layout(TreeMapNode root, Rect area) {
     BinaryNode binaryNode = _convertToBinaryNode(null, root, false);
-    binaryNode.position = area;
+    binaryNode.x = area.center.dx;
+    binaryNode.y = area.center.dy;
+    binaryNode.size = area.size;
     _layoutChildren(area, binaryNode);
-    for (BinaryNode element in binaryNode.children) {
-      element.layoutNode.cur.position = element.position;
+    for (var node in binaryNode.children) {
+      Rect rect = Rect.fromCenter(center: node.position, width: node.size.width, height: node.size.height);
+      node.layoutNode.cur.position = rect;
     }
   }
 
@@ -67,12 +70,15 @@ class BinaryLayout extends TreemapLayout {
     //无法再分割直接返回
     if (start >= end - 1) {
       BinaryNode node = nodes[start];
-      node.position = Rect.fromLTRB(
+      Rect rect = Rect.fromLTRB(
         left.toDouble(),
         top.toDouble(),
         right.toDouble(),
         bottom.toDouble(),
       );
+      node.x = rect.center.dx;
+      node.y = rect.center.dy;
+      node.size = rect.size;
       return;
     }
     double valueOffset = sums[start];
@@ -115,7 +121,6 @@ class BinaryNode extends TreeNode<BinaryNode> {
   final TreeMapNode layoutNode;
   BinaryNode? left;
   BinaryNode? right;
-  Rect position = Rect.zero;
 
   BinaryNode(super.parent, this.props, this.layoutNode, {super.deep, super.maxDeep, super.value});
 }

@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'package:chart_xutil/chart_xutil.dart';
 import 'package:e_chart/e_chart.dart';
-import 'package:e_chart_ext/src/model/chart_offset.dart';
 
 import '../../../model/graph/graph_node.dart';
 

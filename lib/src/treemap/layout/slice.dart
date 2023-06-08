@@ -21,9 +21,8 @@ class SliceLayout extends TreemapLayout {
     for (var node in nodeList) {
       double ratio = node.areaRatio / allValue;
       double h2 = ratio * h;
-      node.position = Rect.fromLTWH(rect.left, topOffset, w, h2);
-      topOffset += node.position.height;
+      node.setPosition(Rect.fromLTWH(rect.left, topOffset, w, h2));
+      topOffset += node.getPosition().height;
     }
   }
-
 }

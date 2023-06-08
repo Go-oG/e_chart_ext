@@ -2,12 +2,7 @@ import 'dart:ui';
 
 import 'package:e_chart/e_chart.dart';
 
-import 'layout/binary.dart';
-import 'layout/dice.dart';
 import 'layout/layout.dart';
-import 'layout/slice.dart';
-import 'layout/slice_dice.dart';
-import 'layout/square.dart';
 import 'node.dart';
 import 'treemap_series.dart';
 
@@ -58,7 +53,7 @@ class LayoutHelper {
 
 
   TreeMapNode layout(TreeMapNode root, Rect rect) {
-    root.position = rect;
+    root.setPosition(rect);
     if (_sort != null) {
       root.sort(_sort!, false);
     }
@@ -77,15 +72,15 @@ class LayoutHelper {
   void _layoutNodeChildren(TreeMapNode node) {
     var p = _paddingStack[node.deep] ?? 0;
     ///处理自身的padding
-    var rect = node.position;
+    var rect = node.getPosition();
     var x0 = rect.left + p;
     var y0 = rect.top + p;
     var x1 = rect.right - p;
     var y1 = rect.bottom - p;
     if (x1 < x0) x0 = x1 = (x0 + x1) / 2;
     if (y1 < y0) y0 = y1 = (y0 + y1) / 2;
-    node.position = Rect.fromLTRB(x0, y0, x1, y1);
-    rect = node.position;
+    node.setPosition( Rect.fromLTRB(x0, y0, x1, y1));
+    rect = node.getPosition();
     if (node.hasChild) {
       ///布局孩子
       p = _paddingStack[node.deep + 1] = _paddingInner(node);
@@ -100,12 +95,12 @@ class LayoutHelper {
   }
 
   bool roundNode(TreeMapNode node, int index, TreeMapNode other) {
-    node.position = Rect.fromLTRB(
-      node.position.left.roundToDouble(),
-      node.position.top.roundToDouble(),
-      node.position.right.roundToDouble(),
-      node.position.bottom.roundToDouble(),
-    );
+    node.setPosition(Rect.fromLTRB(
+      node.getPosition().left.roundToDouble(),
+      node.getPosition().top.roundToDouble(),
+      node.getPosition().right.roundToDouble(),
+      node.getPosition().bottom.roundToDouble(),
+    ));
     return false;
   }
 

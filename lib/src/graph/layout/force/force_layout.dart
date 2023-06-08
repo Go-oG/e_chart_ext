@@ -59,14 +59,14 @@ class ForceLayout extends GraphLayout {
           stop();
           return;
         }
-        onLayoutUpdate();
+        notifyLayoutUpdate();
       });
       _simulation?.onEnd = () {
         if (hasInterrupted) {
           stop();
           return;
         }
-        onLayoutEnd();
+        notifyLayoutEnd();
       };
     }
     clearInterrupt();

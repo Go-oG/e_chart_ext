@@ -1,99 +1,167 @@
-
 import 'package:chart_xutil/chart_xutil.dart';
 import 'package:e_chart/e_chart.dart';
-import '../node.dart';
+import 'package:e_chart_ext/src/tree/node.dart';
+import 'package:flutter/material.dart';
+
 import '../tree_layout.dart';
 
-/// 生态树布局
-/// 布局时不考虑节点大小总是将其视作为1，
-/// 并且所有的叶子节点总是占满对应的尺寸
-class DendrogramLayout extends TreeLayout<TreeLayoutNode> {
-  ///分隔函数，用于分隔节点间距
-  Fun2<TreeLayoutNode, TreeLayoutNode, num> splitFun = (a, b) {
-    return a.parent == b.parent ? 1 : 2;
-  };
-
-  /// 当该参数为true时，表示布局传入的参数为每层之间的间距
-  /// 为false时则表示映射到给定的布局参数
-  bool diff;
-
+///生态树布局
+class DendrogramLayout extends TreeLayout {
   Direction2 direction;
 
   DendrogramLayout({
     this.direction = Direction2.ttb,
-    this.diff = false,
+    super.center,
+    super.centerIsRoot,
+    super.gapFun,
+    super.levelGapFun,
+    super.levelGapSize,
+    super.lineType,
+    super.nodeGapSize,
+    super.nodeSize,
+    super.sizeFun,
+    super.smooth,
   });
 
   @override
-  void doLayout(Context context, TreeLayoutNode root, num width, num height) {
-    bool v = direction == Direction2.ttb || direction == Direction2.btt || direction == Direction2.v;
-    num w = v ? width : height;
-    num h = v ? height : width;
-    _innerLayout(root, diff, w, h);
-    onLayoutEnd();
+  void onLayout(Context context, TreeLayoutNode root, num width, num height) {
+    if (direction != Direction2.v && direction != Direction2.h) {
+      return _layoutNode(root, direction);
+    }
+    int c = root.childCount;
+    if (c <= 1) {
+      Direction2 d = direction == Direction2.v ? Direction2.ttb : Direction2.ltr;
+      return _layoutNode(root, d);
+    }
+    TreeLayoutNode leftNode = TreeLayoutNode(null, root.data);
+    TreeLayoutNode rightNode = TreeLayoutNode(null, root.data);
+    int middle = c ~/ 2;
+    each(root.children, (node, i) {
+      if (i <= middle) {
+        leftNode.add(node);
+      } else {
+        rightNode.add(node);
+      }
+    });
+
+    ///重新计算子树的深度和高度
+    leftNode.resetDeep(0, false);
+    int maxHeight = maxBy<TreeLayoutNode>(leftNode.children, (p0) => p0.height).height;
+    leftNode.resetHeight(maxHeight + 1, false);
+
+    rightNode.resetDeep(0, false);
+    maxHeight = maxBy<TreeLayoutNode>(rightNode.children, (p0) => p0.height).height;
+    rightNode.resetHeight(maxHeight + 1, false);
+
+    if (direction == Direction2.v) {
+      _layoutNode(leftNode, Direction2.btt);
+      _layoutNode(rightNode, Direction2.ttb);
+    } else {
+      _layoutNode(leftNode, Direction2.rtl);
+      _layoutNode(rightNode, Direction2.ltr);
+    }
+    bool b = leftNode.childCount > rightNode.childCount;
+    if (b) {
+      ///将right 平移到left
+      num dx = leftNode.x - rightNode.x;
+      num dy = leftNode.y - rightNode.y;
+      rightNode.translate(dx, dy);
+    } else {
+      ///将left 平移到right
+      num dx = rightNode.x - leftNode.x;
+      num dy = rightNode.y - leftNode.y;
+      leftNode.translate(dx, dy);
+    }
+    ///还原节点之间的关系
+    root.clear();
+    root.size = rightNode.size;
+    root.x = b ? leftNode.x : rightNode.x;
+    root.y = b ? leftNode.y : rightNode.y;
+    for (var node in leftNode.children) {
+      root.add(node);
+    }
+    for (var node in rightNode.children) {
+      root.add(node);
+    }
+    ///还原树的高度和深度
+    root.resetDeep(0, false);
+    root.resetHeight(max([leftNode.height, rightNode.height]).toInt() + 1, false);
   }
 
-  void _innerLayout(TreeLayoutNode root, bool diff, num dx, num dy) {
-    ///第一步计算初始化位置(归一化)
-    TreeLayoutNode? preNode;
-    num x = 0;
-    root.eachAfter((node, index, startNode) {
-      if (node.hasChild) {
-        //求平均值(居中)
-        node.x = aveBy<TreeLayoutNode>(node.children, (p0) => p0.x);
-        ///Y方向倒序(root在最下面(值最大))
-        node.y = 1 + maxBy<TreeLayoutNode>(node.children, (p0) => p0.y).y;
-      } else {
-        node.x = preNode != null ? (x += splitFun(node, preNode!)) : 0;
-        node.y = 0;
-        preNode = node;
+  void _layoutNode(TreeLayoutNode root, Direction2 direction) {
+    if (direction == Direction2.v || direction == Direction2.h) {
+      throw FlutterError('该方法不支持 Direction2.v 和Direction2.h');
+    }
+    bool v = direction == Direction2.ttb || direction == Direction2.btt;
+    List<TreeLayoutNode> leafList = [];
+    root.eachBefore((node, index, startNode) {
+      if (node.notChild) {
+        leafList.add(node);
       }
       return false;
     });
 
-    ///进行坐标映射
-    TreeFun<TreeLayoutNode> fun;
-    if (diff) {
-      ///将坐标直接进行映射
-      fun = (TreeLayoutNode node, b, c) {
-        node.x = (node.x - root.x) * dx;
-        node.y = (root.y - node.y) * dy;
-        return false;
-      };
-    } else {
-      TreeLayoutNode left = root.leafLeft();
-      TreeLayoutNode right = root.leafRight();
-
-      ///修正偏移
-      num x0 = left.x - splitFun.call(left, right) / 2;
-      num x1 = right.x + splitFun.call(right, left) / 2;
-      fun = (TreeLayoutNode node, b, c) {
-        node.x = (node.x - x0) / (x1 - x0) * dx;
-        ///将 Y倒置并映射位置
-        node.y = (1 - (root.y != 0 ? (node.y / root.y) : 1)) * dy;
-        return false;
-      };
+    ///计算Y轴方向上的位置
+    List<num> yList = List.filled(root.height + 1, 0);
+    for (int i = 1; i <= root.height; i++) {
+      num levelGap = getLevelGap(i - 1, i);
+      yList[i] = levelGap + yList[i - 1];
     }
-    root.eachAfter(fun);
-    if (direction == Direction2.ttb) {
-      return;
-    }
-    var ll = root.leaves();
-    num maxV = maxBy<TreeLayoutNode>(ll, (p0) => p0.y).y;
-
-    ///修正方向
+    yList = List.from(yList.reversed);
     root.each((node, index, startNode) {
-      if (direction == Direction2.btt) {
-        node.y = (maxV - node.y);
-      } else if (direction == Direction2.ltr || direction == Direction2.rtl) {
-        num t = node.x;
-        node.x = node.y;
-        node.y = t;
-        if (direction == Direction2.rtl) {
-          node.x = maxV - node.x;
+      if (v) {
+        node.y = yList[node.height];
+      } else {
+        node.x = yList[node.height];
+      }
+      return false;
+    });
+
+    ///处理X轴方向的位置
+    num offset = 0;
+    TreeLayoutNode? preNode;
+    List<TreeLayoutNode> preLeafList = [];
+    Set<TreeLayoutNode> preLeafSet = {};
+    for (var node in leafList) {
+      Size size = getNodeSize(node);
+      node.size = size;
+      if (v) {
+        node.x = offset + size.width / 2;
+        offset += size.width + getNodeGap(preNode ?? node, node).dx;
+      } else {
+        node.y = offset + size.height / 2;
+        offset += size.height + getNodeGap(preNode ?? node, node).dy;
+      }
+      if (node.parent != null && (node.parent!.height - node.height).abs() == 1 && !preLeafSet.contains(node.parent!)) {
+        preLeafList.add(node.parent!);
+      }
+    }
+
+    List<TreeLayoutNode> nextLeafList = [];
+    while (preLeafList.isNotEmpty) {
+      preLeafSet = {};
+      for (var node in preLeafList) {
+        var right = node.leafRight();
+        var left = node.leafLeft();
+        if (v) {
+          node.x = (right.x + left.x) / 2;
+        } else {
+          node.y = (right.y + left.y) / 2;
+        }
+        var parent = node.parent;
+        if (parent != null && (parent.height - node.height).abs() == 1 && !preLeafSet.contains(parent)) {
+          nextLeafList.add(parent);
+          preLeafSet.add(parent);
         }
       }
-      return false;
-    });
+      preLeafList = nextLeafList;
+      nextLeafList = [];
+    }
+
+    if (direction == Direction2.btt) {
+      root.bottom2Top();
+    } else if (direction == Direction2.rtl) {
+      root.right2Left();
+    }
   }
 }

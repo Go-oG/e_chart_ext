@@ -41,7 +41,7 @@ class DagreLayout extends GraphLayout {
 
   void runLayout(Context context, Graph graph, num width, num height) {
     if (graph.nodes.isEmpty) {
-      onLayoutEnd();
+      notifyLayoutEnd();
       return;
     }
     List<DagreNode> nodeList = [];
@@ -107,6 +107,6 @@ class DagreLayout extends GraphLayout {
       edge.x = value.x;
       edge.y = value.y;
     });
-    onLayoutEnd();
+    notifyLayoutEnd();
   }
 }

@@ -39,7 +39,6 @@ export 'src/model/graph/graph.dart';
 export 'src/model/graph/graph_node.dart';
 export 'src/model/graph/edge.dart';
 export 'src/model/tree_data.dart';
-export 'src/model/chart_offset.dart';
 
 export 'src/pack/pack_series.dart';
 export 'src/pack/pack_node.dart';
@@ -54,7 +53,8 @@ export 'src/sunburst/sunburst_series.dart';
 export 'src/themeriver/theme_river_series.dart';
 
 export 'src/tree/layout/compact_layout.dart';
-export 'src/tree/layout/d3_tree_layout.dart';
+export 'src/tree/layout/d3_tree_layout.dart' hide InnerNode;
+export 'src/tree/layout/d3_dendrogram_layout.dart';
 export 'src/tree/layout/dendrogram_layout.dart';
 export 'src/tree/layout/indented_layout.dart';
 export 'src/tree/layout/mindmap_layout.dart';

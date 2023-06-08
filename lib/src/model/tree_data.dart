@@ -32,6 +32,11 @@ class TreeData {
     return a ? true : (other.id! == id!);
   }
 
+  @override
+  String toString() {
+    return (label == null || label!.isEmpty) ? '$value' : label!;
+  }
+
   static int computeDeep(TreeData data) {
     List<TreeData> dl = [data];
     int deep = 0;

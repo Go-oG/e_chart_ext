@@ -10,8 +10,8 @@ class TreeMapNode extends TreeNode<TreeMapNode> {
   NodeProps start = NodeProps(); //动画开始帧
   NodeProps end = NodeProps(); //动画结束帧
 
-  TreeMapNode(super.parent, this.data, {super.deep, super.maxDeep, super.value}){
-    setExpand(false,false);
+  TreeMapNode(super.parent, this.data, {super.deep, super.maxDeep, super.value}) {
+    setExpand(false, false);
   }
 
   ///计算面积比
@@ -22,11 +22,15 @@ class TreeMapNode extends TreeNode<TreeMapNode> {
     return value / parent!.value;
   }
 
-  Rect get position => cur.position;
-
-  set position(Rect rect) {
+  setPosition(Rect rect) {
+    x = rect.center.dx;
+    y = rect.center.dy;
+    size = rect.size;
     cur.position = rect;
   }
+
+  Rect getPosition(){return cur.position;}
+
 }
 
 class NodeProps {

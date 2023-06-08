@@ -59,14 +59,14 @@ class CircularLayout extends GraphLayout {
     var nodes = graph.nodes;
     int nodeCount = nodes.length;
     if (nodeCount == 0) {
-      onLayoutEnd();
+      notifyLayoutEnd();
       return;
     }
     Offset center = Offset(this.center[0].convert(width), this.center[1].convert(height));
     if (nodeCount == 1) {
       nodes[0].x = center.dx;
       nodes[0].y = center.dy;
-      onLayoutEnd();
+      notifyLayoutEnd();
       return;
     }
     List<num> radiusList = computeRadius(graph, width, height);
@@ -86,7 +86,7 @@ class CircularLayout extends GraphLayout {
       node.x = off.dx;
       node.y = off.dy;
     });
-    onLayoutEnd();
+    notifyLayoutEnd();
   }
 
   @override

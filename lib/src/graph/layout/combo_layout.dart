@@ -56,7 +56,7 @@ class ComboLayout extends GraphLayout {
     bool first = true;
     innerLayout() {
       checkInterrupt();
-      onLayoutUpdate();
+      notifyLayoutEnd();
       each(comboList, (cn, i) {
         if (!first) {
           cn._lastOffset = Offset(cn.x, cn.y);
@@ -66,8 +66,9 @@ class ComboLayout extends GraphLayout {
       });
     }
 
-    outerLayout.layoutUpdate = innerLayout;
-    outerLayout.layoutEnd = innerLayout;
+    outerLayout.addListener(() {
+      innerLayout();
+    });
     outerLayout.doLayout(context, rootGraph, width, height);
   }
 
@@ -100,16 +101,16 @@ class ComboLayout extends GraphLayout {
       }
     }
 
-    combo.layout.layoutUpdate = () {
+    combo.layout.addListener(() {
       checkInterrupt();
       innerLayout();
-      onLayoutUpdate();
-    };
-    combo.layout.layoutEnd = () {
-      checkInterrupt();
-      innerLayout.call();
-      onLayoutEnd();
-    };
+      var c = combo.layout.value;
+      if (c.code == GraphLayout.layoutEnd) {
+        notifyLayoutEnd();
+      } else {
+        notifyLayoutUpdate();
+      }
+    });
     combo.layout.doLayout(context, combo.graph, size.width, size.height);
   }
 

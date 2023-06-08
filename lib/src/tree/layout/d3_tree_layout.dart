@@ -1,22 +1,41 @@
+import 'dart:ui';
+
 import 'package:chart_xutil/chart_xutil.dart';
 import 'package:e_chart/e_chart.dart';
+import 'package:flutter/widgets.dart';
 
 import '../node.dart';
 import '../tree_layout.dart';
 
-class D3TreeLayout extends TreeLayout<TreeLayoutNode> {
+class D3TreeLayout extends TreeLayout {
+  ///分离函数，用于决定两个节点(一般为兄弟节点)之间的间距
   Fun2<TreeLayoutNode, TreeLayoutNode, num> splitFun = (a, b) {
+    ///对于Radial布局 一般设置为 (a.parent == b.parent ? 1 : 2) / a.depth;
     return a.parent == b.parent ? 1 : 2;
   };
-  /// 当该参数为true时，表示布局传入的参数为每层之间的间距
+
+  /// 当该参数为true时，表示[onLayout]方法中的传入的参数为每层之间的间距
   /// 为false时则表示映射到给定的布局参数
   bool diff = false;
 
+  D3TreeLayout({
+    this.diff = false,
+    super.gapFun,
+    super.levelGapFun,
+    super.lineType,
+    super.sizeFun,
+    super.center=const [SNumber.percent(50), SNumber.percent(0)],
+    super.centerIsRoot,
+    super.levelGapSize,
+    super.nodeGapSize,
+    super.nodeSize,
+  });
+
   @override
-  void doLayout(Context context, TreeLayoutNode root, num width, num height) {
+  void onLayout(Context context, TreeLayoutNode root, num width, num height) {
     num dx = width;
     num dy = height;
-    _InnerNode t = _treeRoot(root);
+    InnerNode t = _treeRoot(root);
     t.eachAfter(_firstWalk);
     t.parent!.m = -t.z;
     t.eachBefore(_secondWalk);
@@ -28,25 +47,28 @@ class D3TreeLayout extends TreeLayout<TreeLayoutNode> {
       });
     } else {
       var left = root, right = root, bottom = root;
+
+      ///找到最右 最左 最低的节点
       root.eachBefore((node, b, c) {
         if (node.x < left.x) left = node;
         if (node.x > right.x) right = node;
         if (node.deep > bottom.deep) bottom = node;
         return false;
       });
-      var s = left == right ? 1 : splitFun.call(left, right) / 2,
-          tx = s - left.x,
-          kx = dx / (right.x + s + tx),
-          ky = dy / (jsOr(bottom.deep, 1));
+
+      var split = left == right ? 1 : splitFun.call(left, right) / 2;
+
+      var tx = split - left.x, kx = dx / (right.x + split + tx), ky = dy / (jsOr(bottom.deep, 1));
       root.eachBefore((node, b, c) {
         node.x = (node.x + tx) * kx;
         node.y = node.deep * ky;
         return false;
       });
+      double topOffset = 0;
     }
   }
 
-  void _moveSubtree(_InnerNode wm, _InnerNode wp, num shift) {
+  void _moveSubtree(InnerNode wm, InnerNode wp, num shift) {
     var change = shift / (wp.i - wm.i);
     wp.c -= change;
     wp.s += shift;
@@ -55,12 +77,12 @@ class D3TreeLayout extends TreeLayout<TreeLayoutNode> {
     wp.m += shift;
   }
 
-  void _executeShifts(_InnerNode v) {
+  void _executeShifts(InnerNode v) {
     num shift = 0.0;
     num change = 0;
     var children = v.children;
     int i = children.length;
-    _InnerNode w;
+    InnerNode w;
     while (--i >= 0) {
       w = children[i];
       w.z += shift;
@@ -69,64 +91,64 @@ class D3TreeLayout extends TreeLayout<TreeLayoutNode> {
     }
   }
 
-  _InnerNode _nextAncestor(_InnerNode vim, _InnerNode v, _InnerNode ancestor) {
+  InnerNode _nextAncestor(InnerNode vim, InnerNode v, InnerNode ancestor) {
     return vim.a!.parent == v.parent ? vim.a! : ancestor;
   }
 
-  _InnerNode _treeRoot(TreeLayoutNode root) {
-    _InnerNode tree = _InnerNode(null, root, 0);
-    List<_InnerNode> nodes = [tree];
+  InnerNode _treeRoot(TreeLayoutNode root) {
+    InnerNode tree = InnerNode(null, root, 0);
+    List<InnerNode> nodes = [tree];
     List<TreeLayoutNode> children = [];
     while (nodes.isNotEmpty) {
       var node = nodes.removeLast();
       children = node.node!.children;
       if (children.isNotEmpty) {
-        node.children.addAll(List.generate(children.length, (index) => _InnerNode(null, null, 0)));
+        node.children.addAll(List.generate(children.length, (index) => InnerNode(null, null, 0)));
         for (int i = children.length - 1; i >= 0; --i) {
-          var child = node.children[i] = _InnerNode(null, children[i], i);
+          var child = node.children[i] = InnerNode(null, children[i], i);
           nodes.add(child);
           child.parent = node;
         }
       }
     }
-    var p = _InnerNode(null, null, 0);
+    var p = InnerNode(null, null, 0);
     tree.parent = p;
     p.children.add(tree);
     return tree;
   }
 
-  bool _firstWalk(_InnerNode v, b, c) {
-    List<_InnerNode> children = v.children;
+  bool _firstWalk(InnerNode v, b, c) {
+    List<InnerNode> children = v.children;
     var siblings = v.parent!.children;
-    _InnerNode? w = isTrue(v.i) ? siblings[v.i - 1] : null;
+    InnerNode? w = isTrue(v.i) ? siblings[v.i - 1] : null;
     if (children.isNotEmpty) {
       _executeShifts(v);
       var midpoint = (children[0].z + children[children.length - 1].z) / 2;
-      if (isTrue(w)) {
-        v.z = w!.z + splitFun.call(v.node!, w.node!);
+      if (w != null) {
+        v.z = w.z + splitFun.call(v.node!, w.node!);
         v.m = v.z - midpoint;
       } else {
         v.z = midpoint;
       }
-    } else if (isTrue(w)) {
-      v.z = w!.z + splitFun.call(v.node!, w.node!);
+    } else if (w != null) {
+      v.z = w.z + splitFun.call(v.node!, w.node!);
     }
     v.parent?.A = _apportion(v, w, jsOr(v.parent?.A, siblings[0]));
     return false;
   }
 
-  bool _secondWalk(_InnerNode v, b, c) {
+  bool _secondWalk(InnerNode v, b, c) {
     v.node!.x = v.z + v.parent!.m;
     v.m += v.parent!.m;
     return false;
   }
 
-  _InnerNode _apportion(_InnerNode v, _InnerNode? w, _InnerNode ancestor) {
+  InnerNode _apportion(InnerNode v, InnerNode? w, InnerNode ancestor) {
     if (w != null) {
-      _InnerNode? vip = v;
-      _InnerNode vop = v;
-      _InnerNode? vim = w;
-      _InnerNode vom = vip.parent!.children[0];
+      InnerNode? vip = v;
+      InnerNode vop = v;
+      InnerNode? vim = w;
+      InnerNode vom = vip.parent!.children[0];
       num sip = vip.m;
       num sop = vop.m;
       num sim = vim.m;
@@ -171,31 +193,31 @@ class D3TreeLayout extends TreeLayout<TreeLayoutNode> {
     node.y = node.deep * dy;
   }
 
-  _InnerNode? _nextLeft(_InnerNode v) {
+  InnerNode? _nextLeft(InnerNode v) {
     var children = v.children;
     return children.isNotEmpty ? children[0] : v.t;
   }
 
-  _InnerNode? _nextRight(_InnerNode v) {
+  InnerNode? _nextRight(InnerNode v) {
     var children = v.children;
     return children.isNotEmpty ? children[children.length - 1] : v.t;
   }
 }
 
-class _InnerNode extends TreeNode<_InnerNode> {
+class InnerNode extends TreeNode<InnerNode> {
   TreeLayoutNode? node;
   int i;
-  _InnerNode? A; // default ancestor
-  _InnerNode? a; // ancestor
+  InnerNode? A; // default ancestor
+  InnerNode? a; // ancestor
   num z = 0; // prelim
   num m = 0; // mod
   num c = 0; // change
   num s = 0; // shift
-  _InnerNode? t; // thread
+  InnerNode? t; // thread
   num x = 0;
   num y = 0;
 
-  _InnerNode(super.parent, this.node, this.i) {
+  InnerNode(super.parent, this.node, this.i) {
     a = this;
   }
 }

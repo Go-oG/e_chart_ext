@@ -1,4 +1,3 @@
-
 import 'package:e_chart/e_chart.dart';
 
 import '../node.dart';
@@ -6,15 +5,22 @@ import '../tree_layout.dart';
 import 'compact_layout.dart';
 
 ///思维导图
-class MindMapLayout extends TreeLayout<TreeLayoutNode> {
+class MindMapLayout extends TreeLayout {
   MindMapLayout({
     super.gapFun,
     super.levelGapFun,
     super.sizeFun,
+    super.lineType = LineType.line,
+    super.smooth = true,
+    super.center=const [SNumber.percent(50), SNumber.percent(50)],
+    super.centerIsRoot=true,
+    super.levelGapSize,
+    super.nodeGapSize,
+    super.nodeSize,
   });
 
   @override
-  void doLayout(Context context, TreeLayoutNode root, num width, num height) {
+  void onLayout(Context context, TreeLayoutNode root, num width, num height) {
     if (root.childCount <= 1) {
       CompactLayout l = CompactLayout(
         levelAlign: Align2.start,
@@ -23,7 +29,7 @@ class MindMapLayout extends TreeLayout<TreeLayoutNode> {
         levelGapFun: levelGapFun,
         sizeFun: sizeFun,
       );
-      l.doLayout(context, root, width, height);
+      l.onLayout(context, root, width, height);
       return;
     }
 
@@ -47,7 +53,7 @@ class MindMapLayout extends TreeLayout<TreeLayoutNode> {
       levelGapFun: levelGapFun,
       sizeFun: sizeFun,
     );
-    leftLayout.doLayout(context, leftRoot, width, height);
+    leftLayout.onLayout(context, leftRoot, width, height);
 
     CompactLayout rightLayout = CompactLayout(
       levelAlign: Align2.start,
@@ -56,7 +62,7 @@ class MindMapLayout extends TreeLayout<TreeLayoutNode> {
       levelGapFun: levelGapFun,
       sizeFun: sizeFun,
     );
-    rightLayout.doLayout(context, rightRoot, width, height);
+    rightLayout.onLayout(context, rightRoot, width, height);
 
     root.children.clear();
     for (var element in leftRoot.children) {

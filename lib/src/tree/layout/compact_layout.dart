@@ -7,29 +7,30 @@ import 'package:flutter/material.dart';
 import '../node.dart';
 import '../tree_layout.dart';
 
-class CompactLayout extends TreeLayout<TreeLayoutNode> {
+///紧凑树(不支持smooth)
+class CompactLayout extends TreeLayout {
   Direction2 direction;
   Align2 levelAlign;
 
   CompactLayout({
     this.levelAlign = Align2.start,
     this.direction = Direction2.ttb,
+    super.lineType=LineType.line,
+    super.smooth=false,
+    super.center=const [SNumber.percent(50), SNumber.percent(0)],
+    super.centerIsRoot,
     super.gapFun,
     super.levelGapFun,
     super.sizeFun,
+    super.levelGapSize,
+    super.nodeGapSize,
+    super.nodeSize,
   });
 
   @override
-  void doLayout(Context context, TreeLayoutNode root, num width, num height) {
-    _InnerLayout(
-      root,
-      direction: direction,
-      levelGapFun: levelGapFun,
-      gapFun: gapFun,
-      levelAlign: levelAlign,
-      sizeFun: sizeFun,
-    ).layout(width, height);
-    onLayoutEnd();
+  void onLayout(Context context, TreeLayoutNode root, num width, num height) {
+    _InnerLayout(root, direction: direction, levelGapFun: levelGapFun, gapFun: gapFun, levelAlign: levelAlign, sizeFun: sizeFun)
+        .layout(width, height);
   }
 }
 
@@ -69,7 +70,7 @@ class _InnerLayout {
 
   TreeLayoutNode layout(num width, num height) {
     _sizeMap = {};
-    var tmpSize=const Size(1, 1);
+    var tmpSize = const Size(1, 1);
     root.each((node, index, startNode) {
       _sizeMap[node] = sizeFun?.call(node) ?? tmpSize;
       return false;
@@ -79,14 +80,14 @@ class _InnerLayout {
     _secondWalk(root, -_getPrelim(root), 0, 0);
     return root.each((node, index, startNode) {
       Point point = _positionsMap[node]!;
-      node.x=point.x - _boundsLeft;
-      node.y=point.y - _boundsTop;
+      node.x = point.x - _boundsLeft;
+      node.y = point.y - _boundsTop;
       return false;
     });
   }
 
   double _getWidthOrHeightOfNode(TreeLayoutNode node, bool returnWidth) {
-    Size size=_sizeMap[node]!;
+    Size size = _sizeMap[node]!;
     return returnWidth ? size.width : size.height;
   }
 
@@ -103,7 +104,7 @@ class _InnerLayout {
   }
 
   void _updateBounds(TreeLayoutNode node, num centerX, num centerY) {
-    Size size=_sizeMap[node]!;
+    Size size = _sizeMap[node]!;
     double width = size.width;
     double height = size.height;
     double left = centerX - width / 2;

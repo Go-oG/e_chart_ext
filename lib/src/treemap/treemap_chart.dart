@@ -65,10 +65,10 @@ class TreeMapView extends SeriesView<TreeMapSeries> {
     for (var leaf in rootNode.leaves()) {
       leaf.computeHeight(leaf);
     }
-    rootNode.position = Rect.fromLTWH(0, 0, width, height);
+    rootNode.setPosition(Rect.fromLTWH(0, 0, width, height));
 
     ///直接布局测量全部
-    helper.layout(rootNode, rootNode.position);
+    helper.layout(rootNode, rootNode.getPosition());
     showStack.clear();
     showStack.add(rootNode);
     adjustDrawList();
@@ -115,7 +115,7 @@ class TreeMapView extends SeriesView<TreeMapSeries> {
     if (style == null || !style.show) {
       return;
     }
-    Rect rect = node.position;
+    Rect rect = node.getPosition();
     style.drawRect(canvas, mPaint, rect);
     String label = node.data.label ?? '';
     if (label.isEmpty) {
@@ -170,7 +170,7 @@ class TreeMapView extends SeriesView<TreeMapSeries> {
   TreeMapNode? findClickNode(Offset offset) {
     offset = offset.translate(-tx, -ty);
     for (var c in drawList) {
-      Rect rect = c.position;
+      Rect rect = c.getPosition();
       if (rect.contains(offset)) {
         return c;
       }
@@ -192,7 +192,7 @@ class TreeMapView extends SeriesView<TreeMapSeries> {
     adjustDrawList();
 
     ///保持当前比例不变
-    Size rootSize = rootNode.position.size;
+    Size rootSize = rootNode.getPosition().size;
     double rootArea = rootSize.width * rootSize.height;
     double areaRadio = clickNode.value / rootNode.value;
 
@@ -222,15 +222,15 @@ class TreeMapView extends SeriesView<TreeMapSeries> {
     });
 
     ///重新测量位置
-    rootNode.position = Rect.fromLTWH(0, 0, cw, ch);
-    helper.layout(rootNode, rootNode.position);
+    rootNode.setPosition(Rect.fromLTWH(0, 0, cw, ch));
+    helper.layout(rootNode, rootNode.getPosition());
     rootNode.each((node, index, startNode) {
       node.end = node.cur.copy();
       return false;
     });
 
     ///计算平移量
-    Offset center = clickNode.position.center;
+    Offset center = clickNode.getPosition().center;
     double tw = width / 2 - center.dx;
     double th = height / 2 - center.dy;
 
@@ -249,7 +249,7 @@ class TreeMapView extends SeriesView<TreeMapSeries> {
       ty = oldTy + diffTy * v;
       rootNode.each((tmp, index, startNode) {
         rectTween.changeValue(tmp.start.position, tmp.end.position);
-        tmp.position = rectTween.safeGetValue(v);
+        tmp.setPosition(rectTween.safeGetValue(v));
         return false;
       });
       invalidate();
