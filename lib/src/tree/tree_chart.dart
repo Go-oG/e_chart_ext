@@ -12,14 +12,23 @@ class TreeView extends SeriesView<TreeSeries> {
   @override
   void onAttach() {
     super.onAttach();
-    series.layout.addListener(() {
-      Command command = series.layout.value;
-      if (command.code == TreeLayout.layoutEnd) {
-        invalidate();
-      } else if (command.code == TreeLayout.layoutUpdate) {
-        invalidate();
-      }
-    });
+    series.layout.addListener(handleLayoutCommand);
+  }
+
+  @override
+  void onSeriesConfigChangeCommand() {
+    series.layout.removeListener(handleLayoutCommand);
+    series.layout.addListener(handleLayoutCommand);
+    super.onSeriesConfigChangeCommand();
+  }
+
+  void handleLayoutCommand() {
+    Command command = series.layout.value;
+    if (command.code == TreeLayout.layoutEnd) {
+      invalidate();
+    } else if (command.code == TreeLayout.layoutUpdate) {
+      invalidate();
+    }
   }
 
   @override
@@ -30,14 +39,12 @@ class TreeView extends SeriesView<TreeSeries> {
 
   @override
   void onClick(Offset offset) {
-    // TODO: 找到点击节点
     offset = offset.translate(-transOffset.dx, -transOffset.dy);
     TreeLayoutNode? node = series.layout.findNode(offset);
     if (node == null) {
       debugPrint('无法找到点击节点');
       return;
     }
-    debugPrint('点击节点:${node}');
     if (node.notChild) {
       series.layout.expandNode(node);
       return;
@@ -50,8 +57,9 @@ class TreeView extends SeriesView<TreeSeries> {
     super.onLayout(left, top, right, bottom);
     double width = this.width * 0.8;
     double height = this.height * 0.8;
-    series.layout.doLayout(context, series.data, width, height);
-    transOffset = series.layout.translationOffset;
+    var treeLayout = series.layout;
+    treeLayout.doLayout(context, series.data, width, height);
+    transOffset = treeLayout.translationOffset;
   }
 
   @override
@@ -84,10 +92,12 @@ class TreeView extends SeriesView<TreeSeries> {
     }
     Size nodeSize = series.layout.getNodeSize(node);
     series.symbolFun.call(node, nodeSize, null)!.draw(canvas, mPaint, offset);
-    String label=node.data.label??'';
-    if(label.isEmpty){return;}
-    LabelStyle? style=series.labelStyleFun?.call(node,null);
-    TextDrawConfig config=TextDrawConfig(node.position);
+    String label = node.data.label ?? '';
+    if (label.isEmpty) {
+      return;
+    }
+    LabelStyle? style = series.labelStyleFun?.call(node, null);
+    TextDrawConfig config = TextDrawConfig(node.position);
     style?.draw(canvas, mPaint, label, config);
   }
 

@@ -14,6 +14,7 @@ abstract class TreeLayout extends ValueNotifier<Command> {
 
   ///连接线的类型(某些布局只支持某些特定类型)
   LineType lineType;
+
   ///是否平滑连接线
   bool smooth;
 
@@ -44,10 +45,10 @@ abstract class TreeLayout extends ValueNotifier<Command> {
     this.levelGapFun,
   }) : super(Command(0));
 
-
   //========布局中使用的变量=============
   ///保存数据和节点之间的映射关系，以便在O(1)时间中处理数据
   Map<TreeData, TreeLayoutNode> _nodeMap = {};
+
   ///外部传入的数据映射
   ///所有的操作都是对该树进行操作
   TreeLayoutNode _rootNode = TreeLayoutNode(null, TreeData(0, []));
@@ -92,14 +93,14 @@ abstract class TreeLayout extends ValueNotifier<Command> {
     ///计算偏移量
     double x = center[0].convert(width);
     double y = center[1].convert(height);
-    double dx,dy;
-    if(centerIsRoot){
-      dx=x-root.x;
-      dy=y-root.y;
-    }else{
-      Offset c=root.getBoundBox().center;
-      dx=x-c.dx;
-      dy=y-c.dy;
+    double dx, dy;
+    if (centerIsRoot) {
+      dx = x - root.x;
+      dy = y - root.y;
+    } else {
+      Offset c = root.getBoundBox().center;
+      dx = x - c.dx;
+      dy = y - c.dy;
     }
     root.translate(dx, dy);
     _transOffset = Offset.zero;
@@ -137,8 +138,8 @@ abstract class TreeLayout extends ValueNotifier<Command> {
   ///折叠一个节点
   void collapseNode(TreeLayoutNode node, [bool runAnimation = true]) {
     var data = node.data;
-    TreeLayoutNode tmpNode = _nodeMap[data]!;
-    if (tmpNode.notChild) {
+    TreeLayoutNode clickNode = _nodeMap[data]!;
+    if (clickNode.notChild) {
       debugPrint('点击节点无子节点');
       return;
     }
@@ -152,38 +153,42 @@ abstract class TreeLayout extends ValueNotifier<Command> {
       return false;
     });
 
-    Set<TreeLayoutNode> nodeSet = Set.from(tmpNode.descendants());
-    nodeSet.remove(tmpNode);
+    Set<TreeLayoutNode> nodeSet = Set.from(clickNode.descendants());
+    nodeSet.remove(clickNode);
 
     ///移除要折叠的节点
-    List<TreeLayoutNode> children = List.from(tmpNode.children);
-    tmpNode.clear();
+    List<TreeLayoutNode> children = List.from(clickNode.children);
+    clickNode.clear();
 
     ///测量一次布局后的位置
     _startLayout(_rootNode, false);
 
-    ///还原现有节点
-    for (var n in children) {
-      tmpNode.add(n);
-    }
-
+    ///记录新的位置
     Map<TreeData, Offset> positionMap = {};
     Map<TreeData, Size> sizeMap = {};
     _rootNode.each((node, index, startNode) {
-      if (nodeSet.contains(node)) {
-        positionMap[node.data] = tmpNode.position;
-        sizeMap[node.data] = Size.zero;
-      } else {
-        positionMap[node.data] = node.position;
-        sizeMap[node.data] = node.size;
-      }
+      positionMap[node.data] = node.position;
+      sizeMap[node.data] = node.size;
       return false;
     });
-    doAnimator(_rootNode, oldPositionMap, positionMap, oldSizeMap, sizeMap, () {
-      tmpNode.clear();
-      notifyLayoutEnd();
+
+    each(children, (node, i) {
+      node.each((cNode, index, startNode) {
+        positionMap[cNode.data] = clickNode.position;
+        sizeMap[cNode.data] = Size.zero;
+        return false;
+      });
     });
 
+    ///还原现有节点
+    for (var n in children) {
+      clickNode.add(n);
+    }
+
+    doAnimator(_rootNode, oldPositionMap, positionMap, oldSizeMap, sizeMap, () {
+      clickNode.clear();
+      notifyLayoutEnd();
+    });
   }
 
   ///展开一个节点
@@ -196,7 +201,7 @@ abstract class TreeLayout extends ValueNotifier<Command> {
 
     Map<TreeData, Offset> oldPositionMap = {};
     Map<TreeData, Size> oldSizeMap = {};
-    if(runAnimation){
+    if (runAnimation) {
       _rootNode.each((node, index, startNode) {
         oldPositionMap[node.data] = node.position;
         oldSizeMap[node.data] = node.size;
@@ -215,6 +220,7 @@ abstract class TreeLayout extends ValueNotifier<Command> {
       return;
     }
     Offset oldOffset = tmpNode.position;
+
     ///执行动画
     _startLayout(_rootNode, false);
     Map<TreeData, Offset> positionMap = {};
