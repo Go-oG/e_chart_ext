@@ -54,7 +54,7 @@ class RadialTreeLayout extends TreeLayout {
     while (nodeList.isNotEmpty) {
       num v = 0;
       for (var n in nodeList) {
-        Size size = getNodeSize(n);
+        Size size = n.size;
         v = math.max(v, size.longestSide);
         next.addAll(n.children);
       }

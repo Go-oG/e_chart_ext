@@ -94,8 +94,8 @@ class IndentedLayout extends TreeLayout {
   void _layoutTree(TreeLayoutNode root, num width, num height, Direction2 direction) {
     double topOffset = 0;
     root.eachBefore((p0, p1, p2) {
-      Size size = getNodeSize(p0);
-      Size parentSize = p0.parent == null ? Size.zero : getNodeSize(p0.parent!);
+      Size size = p0.size;
+      Size parentSize = p0.parent == null ? Size.zero : p0.parent!.size;
       //节点之间的水平间距
       Offset gap = getNodeGap(p0.parent ?? p0, p0);
       num parentX = p0.parent == null ? 0 : p0.parent!.x;

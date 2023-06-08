@@ -32,7 +32,6 @@ class MindMapLayout extends TreeLayout {
       l.onLayout(context, root, width, height);
       return;
     }
-
     TreeLayoutNode leftRoot = TreeLayoutNode(null, root.data);
     TreeLayoutNode rightRoot = TreeLayoutNode(null, root.data);
     int rightTreeSize = (root.childCount / 2).round();

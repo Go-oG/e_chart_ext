@@ -41,7 +41,7 @@ class TreeView extends SeriesView<TreeSeries> {
     offset = offset.translate(-transOffset.dx, -transOffset.dy);
     TreeLayoutNode? node = series.layout.findNode(offset);
     if (node == null) {
-      debugPrint('无法找到点击节点');
+      debugPrint('无法找到点击节点:${offset}');
       return;
     }
     if (node.notChild) {
@@ -54,8 +54,6 @@ class TreeView extends SeriesView<TreeSeries> {
   @override
   void onLayout(double left, double top, double right, double bottom) {
     super.onLayout(left, top, right, bottom);
-    double width = this.width * 0.8;
-    double height = this.height * 0.8;
     var treeLayout = series.layout;
     treeLayout.doLayout(context, series.data, width, height);
     transOffset = treeLayout.translationOffset;
@@ -63,8 +61,10 @@ class TreeView extends SeriesView<TreeSeries> {
 
   @override
   void onDraw(Canvas canvas) {
+
     canvas.save();
     canvas.translate(transOffset.dx, transOffset.dy);
+
     List<TreeLayoutNode> leaves = series.layout.rootNode.leaves();
     List<TreeLayoutNode> pres = [];
     while (leaves.isNotEmpty) {
@@ -81,7 +81,18 @@ class TreeView extends SeriesView<TreeSeries> {
       drawSymbol(canvas, node);
       return false;
     });
+
+    Rect rect=series.layout.rootNode.getBoundBox();
+    mPaint.style=PaintingStyle.stroke;
+    mPaint.strokeWidth=1;
+    mPaint.color=Colors.deepPurple;
+    canvas.drawRect(rect, mPaint);
+    mPaint.style=PaintingStyle.fill;
+    canvas.drawCircle(rect.center, 8, mPaint);
     canvas.restore();
+
+    debugDraw(canvas, Offset(centerX, centerY));
+
   }
 
   void drawSymbol(Canvas canvas, TreeLayoutNode node) {
@@ -89,7 +100,7 @@ class TreeView extends SeriesView<TreeSeries> {
     if (offset.dx.isNaN || offset.dy.isNaN) {
       return;
     }
-    Size nodeSize = series.layout.getNodeSize(node);
+    Size nodeSize =node.size;
     series.symbolFun.call(node, nodeSize, null)!.draw(canvas, mPaint, offset);
     String label = node.data.label ?? '';
     if (label.isEmpty) {
