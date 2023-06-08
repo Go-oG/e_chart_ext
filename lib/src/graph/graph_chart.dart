@@ -9,26 +9,37 @@ class GraphView extends SeriesView<GraphSeries> {
   RectGesture gesture = RectGesture();
 
   @override
-  void onAttach() {
-    super.onAttach();
+  void onStart() {
+    super.onStart();
     unBindSeries();
-    series.addListener((c) {
-      if (c.code == Command.reLayout) {
-        series.layout.stopLayout();
-        series.layout.doLayout(context, series.graph, width, height);
-      }
-    });
-    series.layout.addListener(() {
-      invalidate();
-    });
+    series.addListener(handleSeriesCommand);
+    series.layout.addListener(handleLayoutCommand);
     context.addGesture(gesture);
     series.bindGesture(this, gesture);
   }
 
+  void handleSeriesCommand(Command c) {
+    if (c.code == Command.reLayout) {
+      series.layout.stopLayout();
+      series.layout.doLayout(context, series.graph, width, height);
+    }
+  }
+
+  void handleLayoutCommand() {
+    invalidate();
+  }
+
   @override
-  void onDetach() {
+  void onStop() {
+    series.removeListener(handleSeriesCommand);
+    series.layout.removeListener(handleLayoutCommand);
+    super.onStop();
+  }
+
+  @override
+  void onDestroy() {
     series.dispose();
-    super.onDetach();
+    super.onDestroy();
   }
 
   @override

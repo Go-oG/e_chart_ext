@@ -123,10 +123,7 @@ class PackView extends SeriesView<PackSeries> {
     super.onLayout(left, top, right, bottom);
     PackNode node = PackNode.fromPackData(series.data);
     node.sum((p0) => p0.value);
-    List<PackNode> leafNodes = node.leaves();
-    for (var leaf in leafNodes) {
-      leaf.computeHeight(leaf);
-    }
+    node.computeHeight();
 
     if (series.sortFun != null) {
       node.sort(series.sortFun!);

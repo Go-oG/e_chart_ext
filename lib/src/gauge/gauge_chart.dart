@@ -5,7 +5,7 @@ import 'package:e_chart/e_chart.dart';
 import 'gauge_series.dart';
 
 ///仪表盘
-class GaugeView extends  ChartView {
+class GaugeView extends ChartView {
   final GaugeSeries series;
   final List<ArcAxisImpl> _angleAxisList = [];
   final ArcGesture gesture = ArcGesture();
@@ -19,8 +19,8 @@ class GaugeView extends  ChartView {
   }
 
   @override
-  void onAttach() {
-    super.onAttach();
+  void onStart() {
+    super.onStart();
     context.addGesture(gesture);
     gesture.edgeFun = (offset) {
       return globalAreaBound.contains(offset);
@@ -28,12 +28,17 @@ class GaugeView extends  ChartView {
   }
 
   @override
-  void onDetach() {
+  void onStop() {
+    context.removeGesture(gesture);
+    gesture.clear();
+    super.onStop();
+  }
+
+  @override
+  void onDestroy() {
     series.dispose();
     _angleAxisList.clear();
-    gesture.clear();
-    context.removeGesture(gesture);
-    super.onDetach();
+    super.onDestroy();
   }
 
   @override

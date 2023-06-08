@@ -10,16 +10,15 @@ class TreeView extends SeriesView<TreeSeries> {
   Offset transOffset = Offset.zero;
 
   @override
-  void onAttach() {
-    super.onAttach();
+  void onStart() {
+    super.onStart();
     series.layout.addListener(handleLayoutCommand);
   }
 
   @override
-  void onSeriesConfigChangeCommand() {
+  void onStop() {
     series.layout.removeListener(handleLayoutCommand);
-    series.layout.addListener(handleLayoutCommand);
-    super.onSeriesConfigChangeCommand();
+    super.onStop();
   }
 
   void handleLayoutCommand() {
@@ -86,7 +85,7 @@ class TreeView extends SeriesView<TreeSeries> {
   }
 
   void drawSymbol(Canvas canvas, TreeLayoutNode node) {
-    Offset offset = node.position;
+    Offset offset = node.center;
     if (offset.dx.isNaN || offset.dy.isNaN) {
       return;
     }
@@ -97,7 +96,7 @@ class TreeView extends SeriesView<TreeSeries> {
       return;
     }
     LabelStyle? style = series.labelStyleFun?.call(node, null);
-    TextDrawConfig config = TextDrawConfig(node.position);
+    TextDrawConfig config = TextDrawConfig(offset);
     style?.draw(canvas, mPaint, label, config);
   }
 

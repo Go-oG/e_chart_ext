@@ -43,19 +43,15 @@ class SunburstView extends SeriesView<SunburstSeries> {
         return;
       }
     }
-    SunburstNode? clickNode;
-    _drawRoot.eachBefore((tmp, index, startNode) {
-      Arc arc = tmp.cur.arc;
-      if (offset.inSector(arc.innerRadius, arc.outRadius, arc.startAngle, arc.sweepAngle)) {
-        clickNode = tmp;
-        return true;
-      }
-      return false;
+
+    SunburstNode? clickNode = _drawRoot.find((node, index, startNode) {
+      Arc arc = node.cur.arc;
+      return (offset.inSector(arc.innerRadius, arc.outRadius, arc.startAngle, arc.sweepAngle));
     });
     if (clickNode == null || clickNode == _drawRoot) {
       return;
     }
-    _forward(clickNode!);
+    _forward(clickNode);
   }
 
   void _handleHoverMove(Offset local) {
@@ -209,9 +205,7 @@ class SunburstView extends SeriesView<SunburstSeries> {
       });
       root.sum();
     }
-    root.leaves().forEach((element) {
-      element.computeHeight(element);
-    });
+    root.computeHeight();
   }
 
   void runAnimator() {
@@ -280,8 +274,9 @@ class SunburstView extends SeriesView<SunburstSeries> {
   }
 
   @override
-  void onDetach() {
-    super.onDetach();
+  void onDestroy() {
     _oldTween?.stop();
+    _oldTween = null;
+    super.onDestroy();
   }
 }

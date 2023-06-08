@@ -46,7 +46,7 @@ class D3DendrogramLayout extends TreeLayout {
   ///生态树布局中，节点之间的连线只能是stepBefore
   @override
   Path? getPath(TreeLayoutNode parent, TreeLayoutNode child, [List<double>? dash]) {
-    Line line = Line([parent.position, child.position]);
+    Line line = Line([parent.center, child.center]);
     double? smoothRatio = smooth ? 0.25 : null;
     line = Line(line.stepBefore(), dashList: dash, smoothRatio: smoothRatio);
     return line.toPath(false);

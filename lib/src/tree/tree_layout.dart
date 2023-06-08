@@ -85,9 +85,7 @@ abstract class TreeLayout extends ValueNotifier<Command> {
 
     ///计算树的深度和高度
     root.resetDeep(0);
-    root.leaves().forEach((leaf) {
-      leaf.computeHeight(leaf);
-    });
+    root.computeHeight();
     onLayout(_context!, root, width, height);
 
     ///计算偏移量
@@ -117,7 +115,7 @@ abstract class TreeLayout extends ValueNotifier<Command> {
 
   ///获取父节点和根节点之间的路径
   Path? getPath(TreeLayoutNode parent, TreeLayoutNode child, [List<double>? dash]) {
-    Line line = Line([parent.position, child.position]);
+    Line line = Line([parent.center, child.center]);
     List<Offset> ol = [];
     if (lineType == LineType.step) {
       ol = line.step();
@@ -126,7 +124,7 @@ abstract class TreeLayout extends ValueNotifier<Command> {
     } else if (lineType == LineType.stepAfter) {
       ol = line.stepAfter();
     } else {
-      ol = [parent.position, child.position];
+      ol = [parent.center, child.center];
     }
     if (smooth) {
       return Line(ol, smoothRatio: 0.25, dashList: dash).toPath(false);
@@ -148,7 +146,7 @@ abstract class TreeLayout extends ValueNotifier<Command> {
     Map<TreeData, Offset> oldPositionMap = {};
     Map<TreeData, Size> oldSizeMap = {};
     _rootNode.each((node, index, startNode) {
-      oldPositionMap[node.data] = node.position;
+      oldPositionMap[node.data] = node.center;
       oldSizeMap[node.data] = node.size;
       return false;
     });
@@ -167,14 +165,14 @@ abstract class TreeLayout extends ValueNotifier<Command> {
     Map<TreeData, Offset> positionMap = {};
     Map<TreeData, Size> sizeMap = {};
     _rootNode.each((node, index, startNode) {
-      positionMap[node.data] = node.position;
+      positionMap[node.data] = node.center;
       sizeMap[node.data] = node.size;
       return false;
     });
 
     each(children, (node, i) {
       node.each((cNode, index, startNode) {
-        positionMap[cNode.data] = clickNode.position;
+        positionMap[cNode.data] = clickNode.center;
         sizeMap[cNode.data] = Size.zero;
         return false;
       });
@@ -203,7 +201,7 @@ abstract class TreeLayout extends ValueNotifier<Command> {
     Map<TreeData, Size> oldSizeMap = {};
     if (runAnimation) {
       _rootNode.each((node, index, startNode) {
-        oldPositionMap[node.data] = node.position;
+        oldPositionMap[node.data] = node.center;
         oldSizeMap[node.data] = node.size;
         return false;
       });
@@ -219,7 +217,7 @@ abstract class TreeLayout extends ValueNotifier<Command> {
       _startLayout(_rootNode, true);
       return;
     }
-    Offset oldOffset = tmpNode.position;
+    Offset oldOffset = tmpNode.center;
 
     ///执行动画
     _startLayout(_rootNode, false);
@@ -230,7 +228,7 @@ abstract class TreeLayout extends ValueNotifier<Command> {
         oldPositionMap[node.data] = oldOffset;
         oldSizeMap[node.data] = Size.zero;
       }
-      positionMap[node.data] = node.position;
+      positionMap[node.data] = node.center;
       node.size = getNodeSize(node);
       sizeMap[node.data] = node.size;
       return false;
@@ -252,8 +250,8 @@ abstract class TreeLayout extends ValueNotifier<Command> {
     tween.addListener(() {
       double v = tween.value;
       root.each((node, index, startNode) {
-        Offset begin = oldPositionMap[node.data] ?? node.position;
-        Offset end = positionMap[node.data] ?? node.position;
+        Offset begin = oldPositionMap[node.data] ?? node.center;
+        Offset end = positionMap[node.data] ?? node.center;
         offsetTween.changeValue(begin, end);
         Offset p = offsetTween.safeGetValue(v);
         node.x = p.dx;
@@ -279,7 +277,7 @@ abstract class TreeLayout extends ValueNotifier<Command> {
   TreeLayoutNode? findNode(Offset local) {
     TreeLayoutNode? result;
     _rootNode.eachAfter((node, index, startNode) {
-      double d = node.position.distance2(local);
+      double d = node.center.distance2(local);
       double r = getNodeSize(node).shortestSide / 2;
       debugPrint('D:$d  R:$r');
       if (d <= r) {

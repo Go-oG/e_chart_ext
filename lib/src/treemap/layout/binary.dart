@@ -17,7 +17,7 @@ class BinaryLayout extends TreemapLayout {
     binaryNode.size = area.size;
     _layoutChildren(area, binaryNode);
     for (var node in binaryNode.children) {
-      Rect rect = Rect.fromCenter(center: node.position, width: node.size.width, height: node.size.height);
+      Rect rect = Rect.fromCenter(center: node.center, width: node.size.width, height: node.size.height);
       node.layoutNode.cur.position = rect;
     }
   }
@@ -119,8 +119,5 @@ class BinaryLayout extends TreemapLayout {
 class BinaryNode extends TreeNode<BinaryNode> {
   final TreeData props;
   final TreeMapNode layoutNode;
-  BinaryNode? left;
-  BinaryNode? right;
-
   BinaryNode(super.parent, this.props, this.layoutNode, {super.deep, super.maxDeep, super.value});
 }

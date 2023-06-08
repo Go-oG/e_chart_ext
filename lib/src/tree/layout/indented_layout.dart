@@ -25,15 +25,15 @@ class IndentedLayout extends TreeLayout {
   });
 
   @override
-  void onLayout(Context context, TreeLayoutNode node, num width, num height) {
+  void onLayout(Context context, TreeLayoutNode root, num width, num height) {
     Direction2 direction = this.direction;
     if (direction != Direction2.ltr && direction != Direction2.rtl && direction != Direction2.h) {
       direction = Direction2.ltr;
     }
     if (direction == Direction2.ltr || direction == Direction2.rtl) {
-      _layoutTree(node, width, height, direction);
+      _layoutTree(root, width, height, direction);
     } else {
-      _layoutCenter(node, width, height);
+      _layoutCenter(root, width, height);
     }
   }
 
@@ -41,7 +41,7 @@ class IndentedLayout extends TreeLayout {
   @override
   Path? getPath(TreeLayoutNode parent, TreeLayoutNode child, [List<double>? dash]) {
     smooth=false;
-    Line line = Line([parent.position, child.position]);
+    Line line = Line([parent.center, child.center]);
     if (lineType == LineType.stepAfter) {
       line = Line(line.stepAfter(), dashList: dash);
     } else {
@@ -69,29 +69,17 @@ class IndentedLayout extends TreeLayout {
     _layoutTree(leftRoot, width, height, Direction2.rtl);
     _layoutTree(rightRoot, width, height, Direction2.ltr);
 
-    Offset leftOffset = leftRoot.position;
-    Offset rightOffset = rightRoot.position;
+    Offset leftOffset = leftRoot.center;
+    Offset rightOffset = rightRoot.center;
     Offset center = Offset(width / 2, 0);
     double tx = center.dx - leftOffset.dx;
     double ty = center.dy - leftOffset.dy;
-    leftRoot.each((node, index, startNode) {
-      if (node != leftRoot) {
-        Offset of = node.position.translate(tx, ty);
-        node.x = of.dx;
-        node.y = of.dy;
-      }
-      return false;
-    });
+    leftRoot.translate(tx, ty);
+
     tx = center.dx - rightOffset.dx;
     ty = center.dy - rightOffset.dy;
-    rightRoot.each((node, index, startNode) {
-      if (node != rightRoot) {
-        Offset of = node.position.translate(tx, ty);
-        node.x = of.dx;
-        node.y = of.dy;
-      }
-      return false;
-    });
+    rightRoot.translate(tx, ty);
+
     root.clear();
     for (var node in leftRoot.children) {
       root.add(node);

@@ -24,14 +24,22 @@ class TreeMapView extends SeriesView<TreeMapSeries> {
   }
 
   @override
-  void onAttach() {
-    super.onAttach();
-    series.addListener((p0) {
-      if (p0.code == TreeMapSeries.commandBack) {
-        back();
-        return;
-      }
-    });
+  void onStart() {
+    super.onStart();
+    series.addListener(handleSeriesCommand);
+  }
+
+  void handleSeriesCommand(Command c) {
+    if (c.code == TreeMapSeries.commandBack) {
+      back();
+      return;
+    }
+  }
+
+  @override
+  void onStop() {
+    series.removeListener(handleSeriesCommand);
+    super.onStop();
   }
 
   @override
@@ -62,9 +70,7 @@ class TreeMapView extends SeriesView<TreeMapSeries> {
     rootNode = toTree<TreeData, TreeMapNode>(series.data, (p0) => p0.children, (p0, p1) => TreeMapNode(p0, p1));
     rootNode.sum((p0) => p0.data.value);
     rootNode.removeWhere((p0) => p0.value <= 0, true);
-    for (var leaf in rootNode.leaves()) {
-      leaf.computeHeight(leaf);
-    }
+    rootNode.computeHeight();
     rootNode.setPosition(Rect.fromLTWH(0, 0, width, height));
 
     ///直接布局测量全部
