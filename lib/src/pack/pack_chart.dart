@@ -9,7 +9,7 @@ import 'pack_series.dart';
 import '../model/tree_data.dart';
 
 class PackView extends SeriesView<PackSeries> {
-  PackNode root = PackNode(null, TreeData(0, []), value: 0);
+  PackNode root = PackNode(null, TreeData(0), value: 0);
 
   double tx = 0;
   double ty = 0;
@@ -138,7 +138,7 @@ class PackView extends SeriesView<PackSeries> {
     if (series.radiusFun != null) {
       layout.radius(series.radiusFun!);
     }
-    root = layout.layout(node);
+    root = layout.doLayout(context,node);
     showNode = root;
   }
 

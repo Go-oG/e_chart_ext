@@ -52,13 +52,13 @@ class LayoutHelper {
   }
 
 
-  TreeMapNode layout(TreeMapNode root, Rect rect) {
+  TreeMapNode layout(Context context,TreeMapNode root, Rect rect) {
     root.setPosition(rect);
     if (_sort != null) {
       root.sort(_sort!, false);
     }
     root.eachBefore((node, index, startNode) {
-      _layoutNodeChildren(node);
+      _layoutNodeChildren(context,node);
       return false;
     });
     _paddingStack = {};
@@ -69,7 +69,7 @@ class LayoutHelper {
   }
 
   ///布局该节点(不包含子节点)
-  void _layoutNodeChildren(TreeMapNode node) {
+  void _layoutNodeChildren(Context context,TreeMapNode node) {
     var p = _paddingStack[node.deep] ?? 0;
     ///处理自身的padding
     var rect = node.getPosition();
@@ -90,7 +90,7 @@ class LayoutHelper {
       y1 -= _paddingBottom(node) - p;
       if (x1 < x0) x0 = x1 = (x0 + x1) / 2;
       if (y1 < y0) y0 = y1 = (y0 + y1) / 2;
-      _layout.layout(node, Rect.fromLTRB(x0, y0, x1, y1));
+      _layout.doLayout(context,node, Rect.fromLTRB(x0, y0, x1, y1));
     }
   }
 

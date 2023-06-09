@@ -4,9 +4,7 @@ import 'package:flutter/widgets.dart';
 import '../model/tree_data.dart';
 import 'node.dart';
 
-abstract class TreeLayout extends ValueNotifier<Command> {
-  static const int layoutEnd = 1;
-  static const int layoutUpdate = 2;
+abstract class TreeLayout extends ChartLayout {
 
   ///描述根节点的位置
   List<SNumber> center;
@@ -42,7 +40,7 @@ abstract class TreeLayout extends ValueNotifier<Command> {
     this.gapFun,
     this.levelGapSize,
     this.levelGapFun,
-  }) : super(Command(0));
+  });
 
   //========布局中使用的变量=============
   ///保存数据和节点之间的映射关系，以便在O(1)时间中处理数据
@@ -50,7 +48,7 @@ abstract class TreeLayout extends ValueNotifier<Command> {
 
   ///外部传入的数据映射
   ///所有的操作都是对该树进行操作
-  TreeLayoutNode _rootNode = TreeLayoutNode(null, TreeData(0, []));
+  TreeLayoutNode _rootNode = TreeLayoutNode(null, TreeData(0));
   Context? _context;
   num width = 0;
   num height = 0;
@@ -298,14 +296,6 @@ abstract class TreeLayout extends ValueNotifier<Command> {
 
   TreeLayoutNode? findNode(Offset local) {
     return rootNode.findNodeByOffset(local);
-  }
-
-  void notifyLayoutEnd() {
-    value = Command(layoutEnd);
-  }
-
-  void notifyLayoutUpdate() {
-    value = Command(layoutUpdate);
   }
 
   @override

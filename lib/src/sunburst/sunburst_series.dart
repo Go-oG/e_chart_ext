@@ -3,7 +3,6 @@ import 'package:e_chart/e_chart.dart';
 import 'layout.dart';
 import '../model/tree_data.dart';
 
-// 半径差值函数
 typedef RadiusDiffFun = SNumber Function(int deep, int maxDeep, num radius);
 
 /// 旭日图
@@ -12,12 +11,15 @@ class SunburstSeries extends RectSeries {
   List<SNumber> center;
   SNumber innerRadius; //内圆半径(<=0时为圆)
   SNumber outerRadius; //外圆最大半径(<=0时为圆)
-  double offsetAngle; // 偏移角度
-  double radiusGap; // 两层半径之间的间距
-  double angleGap; // 相邻两扇形的角度
+  num sweepAngle;
+  num offsetAngle; // 偏移角度
+  bool clockwise;
+  num radiusGap; // 两层半径之间的间距
+  num angleGap; // 相邻两扇形的角度
   bool matchParent; //孩子是否占满父节点区域，如果是则父节点的值来源于子节点
-  double corner; // 扇形区域圆角
+  num corner; // 扇形圆角
   Sort sort; // 数据排序规则
+
   SelectedMode selectedMode; //选中模式的配置
   RadiusDiffFun? radiusDiffFun; // 半径差值函数
   AreaStyle? backStyle; //返回区域样式
@@ -33,6 +35,8 @@ class SunburstSeries extends RectSeries {
     this.innerRadius = const SNumber.number(0),
     this.outerRadius = const SNumber.percent(80),
     this.offsetAngle = 0,
+    this.sweepAngle = 360,
+    this.clockwise = true,
     this.corner = 0,
     this.radiusGap = 0,
     this.angleGap = 0,

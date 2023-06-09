@@ -18,24 +18,8 @@ class SunburstView extends SeriesView<SunburstSeries> {
 
   @override
   void onClick(Offset offset) {
-    _handleClick(offset);
-  }
-
-  @override
-  void onHoverStart(Offset offset) {
-    _handleHoverMove(offset);
-  }
-
-  @override
-  void onHoverMove(Offset offset, Offset last) {
-    _handleHoverMove(offset);
-  }
-
-  @override
-  void onHoverEnd() {}
-
-  void _handleClick(Offset local) {
-    Offset offset = local.translate(-width / 2, -height / 2);
+    Offset center = computeCenter();
+    offset = offset.translate(-center.dx, -center.dy);
     if (backNode != null) {
       Arc arc = backNode!.cur.arc;
       if (offset.inSector(arc.innerRadius, arc.outRadius, arc.startAngle, arc.sweepAngle)) {
@@ -54,8 +38,22 @@ class SunburstView extends SeriesView<SunburstSeries> {
     _forward(clickNode);
   }
 
+  @override
+  void onHoverStart(Offset offset) {
+    _handleHoverMove(offset);
+  }
+
+  @override
+  void onHoverMove(Offset offset, Offset last) {
+    _handleHoverMove(offset);
+  }
+
+  @override
+  void onHoverEnd() {}
+
   void _handleHoverMove(Offset local) {
-    Offset offset = local.translate(-width / 2, -height / 2);
+    Offset center = computeCenter();
+    Offset offset = local.translate(-center.dx, -center.dy);
 
     SunburstNode? node;
     _drawRoot.eachBefore((tmp, index, startNode) {
@@ -79,7 +77,7 @@ class SunburstView extends SeriesView<SunburstSeries> {
     bool hasOldBackNode = backNode != null;
     var oldBackNode = backNode;
     backNode = SunburstNode(null, clickNode.data);
-    backNode!.cur = SunburstInfo(_layout.buildBackArc(series, root, clickNode, width, height));
+    backNode!.cur = SunburstInfo(_layout.buildBackArc(root, clickNode));
     if (hasOldBackNode) {
       backNode!.start = oldBackNode!.start;
       backNode!.end = backNode!.cur.copy();
@@ -93,7 +91,7 @@ class SunburstView extends SeriesView<SunburstSeries> {
       node.start = node.cur.copy();
       return false;
     });
-    _layout.layout(series, root, clickNode, width, height);
+    _layout.doLayout(context, series, root, clickNode, width, height);
     clickNode.each((node, index, startNode) {
       node.end = node.cur.copy();
       return false;
@@ -117,7 +115,7 @@ class SunburstView extends SeriesView<SunburstSeries> {
     });
     if (rootNode.parent != null) {
       backNode = SunburstNode(null, _drawRoot.data);
-      backNode!.cur = SunburstInfo(_layout.buildBackArc(series, root, rootNode, width, height));
+      backNode!.cur = SunburstInfo(_layout.buildBackArc(root, rootNode));
       if (oldBackNode != null) {
         backNode!.start = oldBackNode.cur;
         backNode!.end = backNode!.cur.copy();
@@ -130,7 +128,7 @@ class SunburstView extends SeriesView<SunburstSeries> {
     }
 
     ///布局
-    _layout.layout(series, root, rootNode, width, height);
+    _layout.doLayout(context, series, root, rootNode, width, height);
     rootNode.each((node, index, startNode) {
       node.end = node.cur.copy();
       return false;
@@ -175,7 +173,7 @@ class SunburstView extends SeriesView<SunburstSeries> {
   void onLayout(double left, double top, double right, double bottom) {
     super.onLayout(left, top, right, bottom);
     convertData();
-    _layout.layout(series, root, root, width, height);
+    _layout.doLayout(context, series, root, root, width, height);
     _drawRoot = root;
   }
 
@@ -228,8 +226,9 @@ class SunburstView extends SeriesView<SunburstSeries> {
 
   @override
   void onDraw(Canvas canvas) {
+    Offset center = computeCenter();
     canvas.save();
-    canvas.translate(width / 2, height / 2);
+    canvas.translate(center.dx, center.dy);
     _drawRoot.eachBefore((node, index, startNode) {
       _drawSector(canvas, node);
       return false;
@@ -260,8 +259,12 @@ class SunburstView extends SeriesView<SunburstSeries> {
     if (style == null || arc.sweepAngle <= style.minAngle) {
       return;
     }
-    TextDrawConfig config = TextDrawConfig(node.cur.textPosition,
-        align: Alignment.center, maxWidth: arc.outRadius - arc.innerRadius, rotate: node.cur.textRotateAngle);
+    TextDrawConfig config = TextDrawConfig(
+      node.cur.textPosition,
+      align: Alignment.center,
+      maxWidth: arc.outRadius - arc.innerRadius,
+      rotate: node.cur.textRotateAngle,
+    );
     style.draw(canvas, mPaint, node.data.label!, config);
   }
 
@@ -271,6 +274,10 @@ class SunburstView extends SeriesView<SunburstSeries> {
     }
     AreaStyle style = series.backStyle ?? const AreaStyle(color: Colors.grey);
     style.drawPath(canvas, mPaint, backNode!.cur.arc.toPath(true));
+  }
+
+  Offset computeCenter() {
+    return Offset(series.center[0].convert(width), series.center[1].convert(height));
   }
 
   @override

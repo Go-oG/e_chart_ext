@@ -1,4 +1,4 @@
-library xchart_ext;
+library e_chart_ext;
 
 import 'package:e_chart/e_chart.dart';
 

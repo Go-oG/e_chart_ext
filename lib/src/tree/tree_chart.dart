@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:e_chart/e_chart.dart';
 import 'node.dart';
-import 'tree_layout.dart';
 import 'tree_series.dart';
 
 class TreeView extends SeriesView<TreeSeries> {
@@ -23,11 +22,7 @@ class TreeView extends SeriesView<TreeSeries> {
 
   void handleLayoutCommand() {
     Command command = series.layout.value;
-    if (command.code == TreeLayout.layoutEnd) {
-      invalidate();
-    } else if (command.code == TreeLayout.layoutUpdate) {
-      invalidate();
-    }
+    invalidate();
   }
 
   @override

@@ -6,21 +6,37 @@ import 'package:flutter/material.dart';
 import 'sunburst_series.dart';
 
 /// 旭日图布局计算(以中心点为计算中心)
-class SunburstLayout {
+class SunburstLayout extends ChartLayout {
+  num width = 0;
+  num height = 0;
+  num minRadius = 0;
+  num maxRadius = 0;
+  num radius = 0;
+  late SunburstSeries series;
+
   ///给定根节点和待布局的节点进行数据的布局
-  void layout(SunburstSeries series, SunburstNode root, SunburstNode node, num width, num height) {
+  void doLayout(Context context, SunburstSeries series, SunburstNode root, SunburstNode node, num width, num height) {
+    this.width = width;
+    this.height = height;
+    this.series = series;
+    List<num> radiusList = computeRadius(width, height);
+    minRadius = radiusList[0];
+    maxRadius = radiusList[1];
+    radius = radiusList[2];
+
     int deep = node.height;
 
     ///深度
     if (node != root) {
       deep += 1;
     }
-    num radius = computeRadius(series, width, height)[2];
+
     num diff = radius / deep;
-    Arc arc = buildRootArc(series, root, node, width, height);
+    Arc arc = buildRootArc(root, node);
     node.cur = SunburstInfo(arc);
     node.start = node.cur.copy();
     node.end = node.cur.copy();
+    node.updatePath(series, 1);
     int deepOffset = node == root ? 0 : 1;
     node.eachBefore((tmp, index, startNode) {
       if (tmp.hasChild) {
@@ -28,51 +44,54 @@ class SunburstLayout {
         if (series.radiusDiffFun != null) {
           rd = series.radiusDiffFun!.call(node.height - tmp.height + deepOffset, deep, radius).convert(radius);
         }
-        _innerLayout(series, tmp, tmp.cur.arc, rd);
+        _layoutChildren(tmp, rd);
       }
       return false;
     });
   }
 
-  void _innerLayout(SunburstSeries series, SunburstNode node, Arc arc, num radiusDiff) {
-    node.cur = SunburstInfo(arc);
-    node.updatePath(series, 1);
-    int gapCount = node.childCount - 1;
+  void _layoutChildren(SunburstNode parent, num radiusDiff) {
+    int gapCount = (parent.childCount <= 1) ? 0 : parent.childCount - 1;
+    Arc arc = parent.cur.arc;
     if (arc.sweepAngle.abs() >= 359.999) {
-      gapCount += 1;
-    }
-    if (node.childCount <= 1) {
       gapCount = 0;
     }
-    num remainAngle = arc.sweepAngle - series.angleGap * gapCount;
+    int dir = series.clockwise ? 1 : -1;
+    final num remainAngle = arc.sweepAngle.abs() - series.angleGap.abs() * gapCount;
     num childStartAngle = arc.startAngle;
-    for (var ele in node.children) {
-      double percent = ele.value / node.value;
+
+    final corner = series.corner.abs();
+    final angleGap = series.angleGap.abs();
+    final radiusGap = series.radiusGap.abs();
+
+    for (var ele in parent.children) {
+      double percent = ele.value / parent.value;
       percent = m.min(percent, 1);
+      double swa = remainAngle * percent * dir;
       Arc childArc = Arc(
-        innerRadius: arc.outRadius + series.radiusGap,
-        outRadius: arc.outRadius + series.radiusGap + radiusDiff,
-        startAngle: childStartAngle,
-        sweepAngle: remainAngle * percent,
-        cornerRadius: series.corner,
-        padAngle: series.angleGap,
-      );
+          innerRadius: arc.outRadius + radiusGap,
+          outRadius: arc.outRadius + radiusGap + radiusDiff,
+          startAngle: childStartAngle,
+          sweepAngle: swa,
+          cornerRadius: corner,
+          padAngle: angleGap);
       ele.cur = SunburstInfo(childArc);
       ele.updatePath(series, 1);
-      childStartAngle += ele.cur.arc.sweepAngle + series.angleGap;
+      childStartAngle += swa + angleGap * dir;
     }
   }
 
   ///构建根节点的布局数据
-  Arc buildRootArc(SunburstSeries series, SunburstNode root, SunburstNode node, num width, num height) {
-    double minSize = m.min(width, height) * 0.5;
-    double minRadius = series.innerRadius.convert(minSize);
-    double maxRadius = series.outerRadius.convert(minSize);
+  Arc buildRootArc(SunburstNode root, SunburstNode node) {
+    int dir = series.clockwise ? 1 : -1;
+    num seriesAngle=series.sweepAngle.abs()*dir;
     if (root == node) {
-      return Arc(innerRadius: 0, outRadius: minRadius, startAngle: 0, sweepAngle: 360);
+      return Arc(
+        innerRadius: 0,
+        outRadius: minRadius,
+        startAngle: series.offsetAngle,
+        sweepAngle: seriesAngle,);
     }
-
-    num radius = maxRadius - minRadius;
     num diff = radius / (node.height + 1);
     if (series.radiusDiffFun != null) {
       diff = series.radiusDiffFun!.call(0, node.height + 1, radius).convert(radius);
@@ -81,23 +100,28 @@ class SunburstLayout {
     if (series.radiusDiffFun != null) {
       diff = series.radiusDiffFun!.call(1, node.height + 1, radius).convert(radius);
     }
-
-    return Arc(innerRadius: innerRadius, outRadius: innerRadius + diff, startAngle: 0, sweepAngle: 360);
+    return Arc(
+        innerRadius: innerRadius,
+        outRadius: innerRadius + diff,
+        startAngle: series.offsetAngle,
+        sweepAngle: seriesAngle);
   }
 
-  Arc buildBackArc(SunburstSeries series, SunburstNode root, SunburstNode node, num width, num height) {
-    double minSize = m.min(width, height) * 0.5;
-    double minRadius = series.innerRadius.convert(minSize);
-    double maxRadius = series.outerRadius.convert(minSize);
-    num radius = maxRadius - minRadius;
+  Arc buildBackArc(SunburstNode root, SunburstNode node) {
+    int dir = series.clockwise ? 1 : -1;
     num diff = radius / (node.height + 1);
     if (series.radiusDiffFun != null) {
       diff = series.radiusDiffFun!.call(0, node.height + 1, radius).convert(radius);
     }
-    return Arc(innerRadius: minRadius, outRadius: minRadius + diff, startAngle: 0, sweepAngle: 360);
+    return Arc(
+      innerRadius: minRadius,
+      outRadius: minRadius + diff,
+      startAngle: series.offsetAngle,
+      sweepAngle: series.sweepAngle.abs() * dir,
+    );
   }
 
-  List<num> computeRadius(SunburstSeries series, num width, num height) {
+  List<num> computeRadius(num width, num height) {
     double minSize = min([width, height]) * 0.5;
     double minRadius = series.innerRadius.convert(minSize);
     double maxRadius = series.outerRadius.convert(minSize);
@@ -214,6 +238,7 @@ class SunburstInfo {
       sweepAngle: arc.sweepAngle,
       cornerRadius: arc.cornerRadius,
       padAngle: arc.padAngle,
+      center: arc.center,
     ).toPath(true);
   }
 

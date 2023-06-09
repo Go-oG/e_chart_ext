@@ -12,17 +12,16 @@ class GraphView extends SeriesView<GraphSeries> {
   void onStart() {
     super.onStart();
     unBindSeries();
-    series.addListener(handleSeriesCommand);
+    bindSeriesCommand(series);
     series.layout.addListener(handleLayoutCommand);
     context.addGesture(gesture);
     series.bindGesture(this, gesture);
   }
 
-  void handleSeriesCommand(Command c) {
-    if (c.code == Command.reLayout) {
-      series.layout.stopLayout();
-      series.layout.doLayout(context, series.graph, width, height);
-    }
+  @override
+  void onRelayoutCommand(Command c) {
+    series.layout.stopLayout();
+    series.layout.doLayout(context, series.graph, width, height);
   }
 
   void handleLayoutCommand() {
@@ -31,7 +30,7 @@ class GraphView extends SeriesView<GraphSeries> {
 
   @override
   void onStop() {
-    series.removeListener(handleSeriesCommand);
+    unBindSeries();
     series.layout.removeListener(handleLayoutCommand);
     super.onStop();
   }

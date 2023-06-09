@@ -4,11 +4,11 @@ import 'package:chart_xutil/chart_xutil.dart';
 import 'package:e_chart_ext/e_chart_ext.dart';
 import 'package:flutter/widgets.dart';
 
-class ThemeRiverLayout {
+class ThemeRiverLayout extends ChartLayout{
   num maxTransX = 0,
       maxTransY = 0;
 
-  void doLayout(ThemeRiverSeries series, List<LayoutNode> dataList, double width, double height) {
+  void doLayout(Context context,ThemeRiverSeries series, List<LayoutNode> dataList, double width, double height) {
     if (dataList.isEmpty) {
       return;
     }
@@ -128,7 +128,6 @@ class ThemeRiverLayout {
 
     return {'y0': y0, 'max': max};
   }
-
 }
 
 class _InnerNode {

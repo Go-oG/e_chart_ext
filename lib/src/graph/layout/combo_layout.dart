@@ -105,9 +105,9 @@ class ComboLayout extends GraphLayout {
       checkInterrupt();
       innerLayout();
       var c = combo.layout.value;
-      if (c.code == GraphLayout.layoutEnd) {
+      if (c == Command.layoutEnd) {
         notifyLayoutEnd();
-      } else {
+      } else if (c == Command.layoutUpdate) {
         notifyLayoutUpdate();
       }
     });

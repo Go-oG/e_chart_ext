@@ -10,10 +10,10 @@ import 'sankey_series.dart';
 import 'sort.dart';
 
 ///Ref:https://github.com/d3/d3-sankey/blob/master/src/sankey.js
-class SankeyLayout {
+class SankeyLayout extends ChartLayout {
   /// 整个视图区域坐标坐标
   double left = 0, top = 0, right = 1, bottom = 1;
-  double _nodeWidth = 24; 
+  double _nodeWidth = 24;
   double _nodeGap = 0;
   SankeyAlign _align = const JustifyAlign();
   NodeSort? _nodeSort;
@@ -32,7 +32,13 @@ class SankeyLayout {
     _iterations = series.iterationCount;
   }
 
-  void doLayout(double width, double height, List<ItemData> dataList, List<SankeyLinkData> linkList) {
+  void doLayout(
+    Context context,
+    List<ItemData> dataList,
+    List<SankeyLinkData> linkList,
+    double width,
+    double height,
+  ) {
     left = 0;
     top = 0;
     right = width;

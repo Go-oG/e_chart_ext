@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:e_chart/e_chart.dart';
 import 'package:flutter/widgets.dart';
 
 import 'layout.dart';
@@ -8,7 +9,7 @@ import '../node.dart';
 class DiceLayout extends TreemapLayout {
 
   @override
-  void layout(TreeMapNode root, Rect area) {
+  void doLayout(Context context,TreeMapNode root, Rect area) {
     if (root.notChild) {
       return;
     }

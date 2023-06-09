@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:chart_xutil/chart_xutil.dart';
+import 'package:e_chart/e_chart.dart';
 
 import '../../model/tree_data.dart';
 import 'layout.dart';
@@ -10,7 +11,7 @@ import '../node.dart';
 /// 由于权重只能为int 因此内部会进行相关的double->int的转换
 class BinaryLayout extends TreemapLayout {
   @override
-  void layout(TreeMapNode root, Rect area) {
+  void doLayout(Context context,TreeMapNode root, Rect area) {
     BinaryNode binaryNode = _convertToBinaryNode(null, root, false);
     binaryNode.x = area.center.dx;
     binaryNode.y = area.center.dy;

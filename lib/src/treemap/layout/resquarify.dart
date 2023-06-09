@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:e_chart/e_chart.dart';
+
 import '../node.dart';
 import 'layout.dart';
 import 'square.dart';
@@ -8,7 +10,7 @@ class ResquareLayout extends TreemapLayout {
   double rowsRatio = phi;
 
   @override
-  void layout(TreeMapNode root, Rect area) {
+  void doLayout(Context context,TreeMapNode root, Rect area) {
     resquarify(root, rowsRatio, area.left, area.top, area.right, area.bottom);
   }
 

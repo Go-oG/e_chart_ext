@@ -8,16 +8,16 @@ import 'hex_bin_series.dart';
 
 class HexbinView extends SeriesView<HexbinSeries> {
   List<HexbinNode> nodeList = [];
-  HexbinView(super.series) {
-    for (var data in series.data) {
-      nodeList.add(HexbinNode(data));
-    }
-  }
+  HexbinView(super.series);
 
   @override
   void onLayout(double left, double top, double right, double bottom) {
     super.onLayout(left, top, right, bottom);
-    series.layout.doLayout(series, nodeList, width, height);
+    nodeList=[];
+    for (var data in series.data) {
+      nodeList.add(HexbinNode(data));
+    }
+    series.layout.doLayout(context,series, nodeList, width, height);
   }
 
   @override

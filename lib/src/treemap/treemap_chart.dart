@@ -29,8 +29,9 @@ class TreeMapView extends SeriesView<TreeMapSeries> {
     series.addListener(handleSeriesCommand);
   }
 
-  void handleSeriesCommand(Command c) {
-    if (c.code == TreeMapSeries.commandBack) {
+  void handleSeriesCommand() {
+    Command c=series.value;
+    if (c==TreeMapSeries.commandBack) {
       back();
       return;
     }
@@ -74,7 +75,7 @@ class TreeMapView extends SeriesView<TreeMapSeries> {
     rootNode.setPosition(Rect.fromLTWH(0, 0, width, height));
 
     ///直接布局测量全部
-    helper.layout(rootNode, rootNode.getPosition());
+    helper.layout(context,rootNode, rootNode.getPosition());
     showStack.clear();
     showStack.add(rootNode);
     adjustDrawList();
@@ -229,7 +230,7 @@ class TreeMapView extends SeriesView<TreeMapSeries> {
 
     ///重新测量位置
     rootNode.setPosition(Rect.fromLTWH(0, 0, cw, ch));
-    helper.layout(rootNode, rootNode.getPosition());
+    helper.layout(context,rootNode, rootNode.getPosition());
     rootNode.each((node, index, startNode) {
       node.end = node.cur.copy();
       return false;

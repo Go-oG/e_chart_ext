@@ -32,9 +32,9 @@ class HexTriangleLayout extends HexbinLayout {
   }
 
   @override
-  void doLayout(HexbinSeries series, List<HexbinNode> nodes, num width, num height) {
+  void doLayout(Context context,HexbinSeries series, List<HexbinNode> nodes, num width, num height) {
     checkFlat();
-    super.doLayout(series, nodes, width, height);
+    super.doLayout(context,series, nodes, width, height);
   }
 
   @override

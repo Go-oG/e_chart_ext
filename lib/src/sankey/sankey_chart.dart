@@ -165,7 +165,7 @@ class SankeyView extends SeriesView<SankeySeries> {
   void onLayout(double left, double top, double right, double bottom) {
     super.onLayout(left, top, right, bottom);
     SankeyLayout layout = SankeyLayout(series);
-    layout.doLayout(width, height, series.data, series.links);
+    layout.doLayout(context, series.data, series.links, width, height);
     _nodeList = layout.nodes;
     _linkList = layout.links;
   }

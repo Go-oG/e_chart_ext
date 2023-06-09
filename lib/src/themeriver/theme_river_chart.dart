@@ -115,7 +115,7 @@ class ThemeRiverView extends SeriesView<ThemeRiverSeries> {
   @override
   void onLayout(double left, double top, double right, double bottom) {
     super.onLayout(left, top, right, bottom);
-    layer.doLayout(series, nodeList, width, height);
+    layer.doLayout(context, series, nodeList, width, height);
     tx = ty = 0;
     doAnimator();
   }

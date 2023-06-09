@@ -7,7 +7,7 @@ import '../model/tree_data.dart';
 
 ///树图
 class TreeMapSeries extends RectSeries {
-  static const int commandBack = 1;
+  static const Command commandBack = Command(11);
   TreeData data;
   TreemapLayout layout = SquareLayout();
 
@@ -71,6 +71,6 @@ class TreeMapSeries extends RectSeries {
   }
 
   void back() {
-    notifyChange(commandBack);
+    value = commandBack;
   }
 }

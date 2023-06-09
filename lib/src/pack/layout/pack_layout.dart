@@ -6,7 +6,7 @@ import '../../graph/layout/force/lcg.dart';
 import '../pack_node.dart';
 import 'siblings.dart';
 
-class PackLayout {
+class PackLayout extends ChartLayout{
   Fun1<PackNode, num>? _radiusFun;
   Rect _rect = const Rect.fromLTWH(0, 0, 1, 1);
   num _dx = 1;
@@ -15,7 +15,7 @@ class PackLayout {
     return 3;
   };
 
-  PackNode layout(PackNode root) {
+  PackNode doLayout(Context context,PackNode root) {
     LCG random = DefaultLCG();
     root.props.x = _dx / 2;
     root.props.y = _dy / 2;

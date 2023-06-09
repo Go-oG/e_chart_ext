@@ -6,10 +6,7 @@ import 'package:flutter/widgets.dart';
 import '../model/graph/graph.dart';
 import '../model/graph/graph_node.dart';
 
-abstract class GraphLayout extends ValueNotifier<Command> {
-  static const int layoutEnd = 1;
-  static const int layoutUpdate = 2;
-
+abstract class GraphLayout extends ChartLayout {
   ///是否在工作线程中布局
   bool workerThread;
 
@@ -25,17 +22,19 @@ abstract class GraphLayout extends ValueNotifier<Command> {
     this.nodeSpaceFun,
     this.sort,
     this.workerThread = false,
-  }) : super(Command(0));
+  }) : super();
 
+  @override
   void notifyLayoutEnd() {
     if (!hasInterrupted) {
-      value = Command(layoutEnd);
+      super.notifyLayoutEnd();
     }
   }
 
+  @override
   void notifyLayoutUpdate() {
     if (!hasInterrupted) {
-      value = Command(layoutUpdate);
+      super.notifyLayoutUpdate();
     }
   }
 
@@ -53,7 +52,7 @@ abstract class GraphLayout extends ValueNotifier<Command> {
       return nodeSize!;
     }
 
-    Size size = Size(node.width,node.height);
+    Size size = Size(node.width, node.height);
     if (size.width <= 0 || size.height <= 0) {
       size = const Size.square(8);
     }

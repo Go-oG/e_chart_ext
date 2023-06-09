@@ -114,7 +114,11 @@ class DendrogramLayout extends TreeLayout {
     TreeLayoutNode? preNode;
     List<TreeLayoutNode> preLeafList = [];
     Set<TreeData> preLeafSet = {};
+    Map<TreeLayoutNode, TreeLayoutNode> rightMap = {};
+    Map<TreeLayoutNode, TreeLayoutNode> leftMap = {};
     for (var node in leafList) {
+      rightMap[node] = node;
+      leftMap[node] = node;
       Size size = node.size;
       if (v) {
         node.x = offset + size.width / 2;
@@ -127,13 +131,17 @@ class DendrogramLayout extends TreeLayout {
         preLeafList.add(node.parent!);
       }
     }
-
     List<TreeLayoutNode> nextLeafList = [];
+
     while (preLeafList.isNotEmpty) {
       preLeafSet = {};
       for (var node in preLeafList) {
-        var right = node.leafRight();
-        var left = node.leafLeft();
+        TreeLayoutNode right, left;
+        right = rightMap[node.lastChild] ?? node.leafRight();
+        left = leftMap[node.firstChild] ?? node.leafLeft();
+        rightMap[node] = right;
+        leftMap[node] = left;
+
         if (v) {
           node.x = (right.x + left.x) / 2;
         } else {

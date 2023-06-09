@@ -1,6 +1,7 @@
 import 'dart:math' as m;
 import 'dart:ui';
 import 'package:chart_xutil/chart_xutil.dart';
+import 'package:e_chart/e_chart.dart';
 
 import 'dice.dart';
 import 'layout.dart';
@@ -14,7 +15,7 @@ class SquareLayout extends TreemapLayout {
   num ratio=phi;
 
   @override
-  void layout(TreeMapNode root, Rect area) {
+  void doLayout(Context context,TreeMapNode root, Rect area) {
     root.children.sort((a, b) {
       return b.value.compareTo(a.value);
     });

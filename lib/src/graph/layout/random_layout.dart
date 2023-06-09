@@ -41,9 +41,6 @@ class RandomLayout extends GraphLayout {
   void runLayout(Context context, Graph graph, num width, num height) {
     Random random = Random();
     QuadTree<GraphNode> tree = QuadTree((p0) => p0.x, (p0) => p0.y, 0, 0, width, height);
-    num cx = center[0].convert(width);
-    num cy = center[1].convert(height);
-    num maxRadius = min([width, height]) * 0.4;
     List<GraphNode> nodes = [...graph.nodes];
     if (sort != null) {
       Map<GraphNode, num> sortMap = sort!.call(graph, nodes);
@@ -58,23 +55,15 @@ class RandomLayout extends GraphLayout {
       double nr = getNodeRadius(node);
       num nspace = getNodeSpace(node);
       int c = maxIterations;
-      double r = random.nextDouble() * maxRadius;
-      double angle = random.nextDouble() * 360;
       while (c > 0) {
         checkInterrupt();
-        var a = angle * pi / 180;
-        double x = cx + r * cos(a);
-        double y = cy + r * sin(a);
+        double x = random.nextDouble() * width;
+        double y = random.nextDouble() * height;
         if (!hasCover(tree, x, y, nr, nspace) || c == 1) {
           node.x = x;
           node.y = y;
           tree.add(node);
           break;
-        }
-        if (random.nextDouble() > 0.5) {
-          r += nr / 2;
-        } else {
-          angle = random.nextDouble() * 360;
         }
         c--;
       }
@@ -87,6 +76,7 @@ class RandomLayout extends GraphLayout {
     super.stopLayout();
     interrupt();
   }
+
   bool hasCover(QuadTree<GraphNode> tree, double x, double y, double r, num space) {
     bool covered = false;
     tree.each((node, x1, y1, x2, y2) {
@@ -101,8 +91,9 @@ class RandomLayout extends GraphLayout {
       var dx = (data.x - x).abs();
       var dy = (data.y - y).abs();
       var dis = dx * dx + dy * dy;
-      var dis2 = r + getNodeRadius(data, true) + space;
-      dis2 = dis2 * dis2;
+      var r1 = getNodeRadius(data, true);
+      var dis2 = r + r1 + space;
+      dis2 *= dis2;
       if (dis < dis2) {
         covered = true;
       }

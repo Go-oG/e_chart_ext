@@ -9,7 +9,7 @@ import '../hex_bin_node.dart';
 import '../hex_bin_series.dart';
 
 ///正六边形布局
-abstract class HexbinLayout {
+abstract class HexbinLayout extends ChartLayout{
   static const double _sqrt3 = 1.7320508; //sqrt(3)
   static const Orientation _pointy = Orientation(_sqrt3, _sqrt3 / 2.0, 0.0, 3.0 / 2.0, _sqrt3 / 3.0, -1.0 / 3.0, 0.0, 2.0 / 3.0, 90);
   static const Orientation _flat = Orientation(3.0 / 2.0, 0.0, _sqrt3 / 2.0, _sqrt3, 2.0 / 3.0, 0.0, -1.0 / 3.0, _sqrt3 / 3.0, 0);
@@ -37,7 +37,7 @@ abstract class HexbinLayout {
 
   /// 子类一般情况下不应该重写改方法
   @mustCallSuper
-  void doLayout(HexbinSeries series, List<HexbinNode> nodes, num width, num height) {
+  void doLayout(Context context,HexbinSeries series, List<HexbinNode> nodes, num width, num height) {
     this.width = width;
     this.height = height;
     onLayout(series, nodes, width, height);
