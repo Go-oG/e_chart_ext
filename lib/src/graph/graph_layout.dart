@@ -45,13 +45,15 @@ abstract class GraphLayout extends ValueNotifier<Command> {
 
   ///给定一个节点返回节点的大小
   Size getNodeSize(GraphNode node) {
+    if (sizeFun != null) {
+      return sizeFun!.call(node);
+    }
+
     if (nodeSize != null) {
       return nodeSize!;
     }
-    Size size = Size.zero;
-    if (sizeFun != null) {
-      size = sizeFun!.call(node);
-    }
+
+    Size size = Size(node.width,node.height);
     if (size.width <= 0 || size.height <= 0) {
       size = const Size.square(8);
     }
