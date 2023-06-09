@@ -143,5 +143,5 @@ class Combo extends GraphNode {
   final GraphLayout layout;
   Offset? _lastOffset;
 
-  Combo(super.id, this.layout, this.graph);
+  Combo(this.layout, this.graph, {super.id, super.label, super.value});
 }

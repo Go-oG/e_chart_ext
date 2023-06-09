@@ -154,7 +154,7 @@ class ThemeRiverView extends SeriesView<ThemeRiverSeries> {
   }
 
   void drawText(Canvas canvas, LayoutNode node) {
-    String? label = node.data.label;
+    DynamicText? label = node.data.label;
 
     if (label == null || label.isEmpty) {
       return;

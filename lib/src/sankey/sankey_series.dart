@@ -1,11 +1,10 @@
-import 'package:uuid/uuid.dart';
 import 'package:e_chart/e_chart.dart';
 
 import 'sankey_align.dart';
 import 'sort.dart';
 
 class SankeySeries extends RectSeries {
-  List<SankeyData> nodes;
+  List<ItemData> data;
   List<SankeyLinkData> links;
   double nodeWidth;
   double gap;
@@ -14,11 +13,11 @@ class SankeySeries extends RectSeries {
   NodeSort? nodeSort;
   LinkSort? linkSort;
   Direction direction;
-  StyleFun<SankeyData, AreaStyle> nodeStyle;
-  StyleFun2<SankeyData, SankeyData, AreaStyle>? linkStyleFun;
+  StyleFun<ItemData, AreaStyle> nodeStyle;
+  StyleFun2<ItemData, ItemData, AreaStyle>? linkStyleFun;
 
   SankeySeries({
-    required this.nodes,
+    required this.data,
     required this.links,
     this.nodeWidth = 16,
     this.gap = 8,
@@ -44,7 +43,6 @@ class SankeySeries extends RectSeries {
     super.clip,
     super.z,
   }) : super(
-
           xAxisIndex: -1,
           yAxisIndex: -1,
           polarAxisIndex: -1,
@@ -54,35 +52,13 @@ class SankeySeries extends RectSeries {
         );
 }
 
-class SankeyData {
-  late final String id;
-  final String name;
-
-  SankeyData(this.name, {String? id}) {
-    if (id == null || id.isEmpty) {
-      this.id = const Uuid().v4().toString().replaceAll('-', '');
-    } else {
-      this.id = id;
-    }
-  }
-
-  @override
-  int get hashCode {
-    return id.hashCode;
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is SankeyData && other.id == id;
-  }
-}
-
 class SankeyLinkData {
-  final SankeyData src;
-  final SankeyData target;
-  final double value;
+  ItemData src;
+  ItemData target;
+  double value;
+  DynamicText? label;
 
-  SankeyLinkData(this.src, this.target, this.value);
+  SankeyLinkData(this.src, this.target, this.value, {this.label});
 
   @override
   int get hashCode {

@@ -1,15 +1,16 @@
 import 'package:chart_xutil/chart_xutil.dart';
-import 'package:flutter/widgets.dart';
+import 'package:e_chart/e_chart.dart';
 
-class GraphNode with ExtProps {
-  ///ID 唯一Id
-  final String id;
+class GraphNode extends ItemData with ExtProps {
   ///节点索引
   int index = 0;
+
   ///当前X位置(中心位置)
   double x = double.nan;
+
   ///当前Y位置(中心位置)
   double y = double.nan;
+
   ///给定的固定位置
   double? fx;
   double? fy;
@@ -17,22 +18,20 @@ class GraphNode with ExtProps {
   ///宽高
   double width = 0;
   double height = 0;
+
   ///半径
   num r = 0;
 
   /// 当前X方向速度分量
   double vx = 0;
+
   /// 当前Y方向速度分量
   double vy = 0;
 
   ///权重值
   num weight = 0;
 
-  GraphNode(this.id) {
-    if (id.isEmpty) {
-      throw FlutterError('id不能为空');
-    }
-  }
+  GraphNode({super.id, super.label, super.value});
 
   @override
   int get hashCode {
@@ -48,5 +47,4 @@ class GraphNode with ExtProps {
   String toString() {
     return 'x:${x.toStringAsFixed(0)} y:${y.toStringAsFixed(0)} r:${r.toStringAsFixed(2)} w:${width.toStringAsFixed(2)} h:${height.toStringAsFixed(2)}';
   }
-
 }

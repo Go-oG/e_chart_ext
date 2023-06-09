@@ -123,7 +123,7 @@ class TreeMapView extends SeriesView<TreeMapSeries> {
     }
     Rect rect = node.getPosition();
     style.drawRect(canvas, mPaint, rect);
-    String label = node.data.label ?? '';
+    DynamicText label = node.data.label ?? DynamicText.empty;
     if (label.isEmpty) {
       return;
     }

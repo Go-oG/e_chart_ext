@@ -32,14 +32,14 @@ class SankeyLayout {
     _iterations = series.iterationCount;
   }
 
-  void doLayout(double width, double height, List<SankeyData> nodeList, List<SankeyLinkData> linkList) {
+  void doLayout(double width, double height, List<ItemData> dataList, List<SankeyLinkData> linkList) {
     left = 0;
     top = 0;
     right = width;
     bottom = height;
     _nodes = [];
     _links = [];
-    _nodes.addAll(buildNodes(nodeList, linkList, 0));
+    _nodes.addAll(buildNodes(dataList, linkList, 0));
     _links.addAll(buildLink(_nodes, linkList));
 
     _computeNodeLinks(_nodes, _links);
@@ -129,25 +129,25 @@ class SankeyLayout {
     _iterations = count;
   }
 
-  static List<SankeyNode> buildNodes(List<SankeyData> nodes, List<SankeyLinkData> links, double nodeWidth) {
+  static List<SankeyNode> buildNodes(List<ItemData> dataList, List<SankeyLinkData> links, double nodeWidth) {
     List<SankeyNode> resultList = [];
-    Set<SankeyData> set = {};
-    for (var element in nodes) {
-      if (set.contains(element)) {
+    Set<ItemData> dataSet = {};
+    for (var data in dataList) {
+      if (dataSet.contains(data)) {
         continue;
       }
-      set.add(element);
-      SankeyNode layoutNode = SankeyNode(element, [], []);
+      dataSet.add(data);
+      SankeyNode layoutNode = SankeyNode(data, [], []);
       resultList.add(layoutNode);
     }
     for (var link in links) {
-      if (!set.contains(link.src)) {
-        set.add(link.src);
+      if (!dataSet.contains(link.src)) {
+        dataSet.add(link.src);
         SankeyNode layoutNode = SankeyNode(link.src, [], []);
         resultList.add(layoutNode);
       }
-      if (!set.contains(link.target)) {
-        set.add(link.target);
+      if (!dataSet.contains(link.target)) {
+        dataSet.add(link.target);
         SankeyNode layoutNode = SankeyNode(link.target, [], []);
         resultList.add(layoutNode);
       }
@@ -158,7 +158,7 @@ class SankeyLayout {
   static List<SankeyLink> buildLink(List<SankeyNode> nodes, List<SankeyLinkData> links) {
     Map<String, SankeyNode> nodeMap = {};
     for (var element in nodes) {
-      nodeMap[element.node.id] = element;
+      nodeMap[element.data.id] = element;
     }
     List<SankeyLink> resultList = [];
     for (var link in links) {

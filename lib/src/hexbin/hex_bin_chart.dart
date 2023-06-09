@@ -28,7 +28,7 @@ class HexbinView extends SeriesView<HexbinSeries> {
         Path path = node.shape.toPath(true);
         style.drawPath(canvas, mPaint, path);
       }
-      String? s = node.data.label;
+      DynamicText? s = node.data.label;
       if (s == null || s.isEmpty) {
         continue;
       }

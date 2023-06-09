@@ -15,7 +15,7 @@ class ThemeRiverLayout {
     final List<List<_InnerNode>> nodeList = [];
     for (var ele in dataList) {
       List<_InnerNode> tmp = [];
-      for (var e2 in ele.data.data) {
+      for (var e2 in ele.data.childData) {
         tmp.add(_InnerNode(e2.value));
       }
       if (tmp.isNotEmpty) {

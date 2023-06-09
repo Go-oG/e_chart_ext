@@ -1,11 +1,10 @@
+import 'package:e_chart/e_chart.dart';
 import 'package:flutter/cupertino.dart';
-
-import 'sankey_series.dart';
 
 class SankeyNode {
   final List<SankeyLink> outLinks; //已当前节点为源的输出边(source)
   final List<SankeyLink> inputLinks; // 已当前节点为尾的输入边(target)
-  final SankeyData node;
+  final ItemData data;
   double? value; //节点数值(传入链接的总和)
 
   ///标识坐标
@@ -23,16 +22,16 @@ class SankeyNode {
 
   bool select=false;
   double? colorAlpha;
-  SankeyNode(this.node, this.outLinks, this.inputLinks);
+  SankeyNode(this.data, this.outLinks, this.inputLinks);
 
   @override
   int get hashCode {
-    return node.hashCode;
+    return data.hashCode;
   }
 
   @override
   bool operator ==(Object other) {
-    return other is SankeyNode && other.node == node;
+    return other is SankeyNode && other.data == data;
   }
 }
 

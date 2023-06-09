@@ -6,7 +6,7 @@ import 'layout/hex_layout.dart';
 
 class HexbinSeries extends RectSeries {
   HexbinLayout layout = HexagonsLayout();
-  List<HexbinData> data;
+  List<ItemData> data;
   Fun1<HexbinNode, AreaStyle> styleFun;
   Fun1<HexbinNode, LabelStyle>? labelStyleFun;
 
@@ -46,11 +46,4 @@ class HexbinSeries extends RectSeries {
       this.layout = layout;
     }
   }
-}
-
-class HexbinData {
-  final String id;
-  final String? label;
-
-  HexbinData(this.id, [this.label]);
 }

@@ -42,15 +42,15 @@ class GaugeSeries extends RectSeries {
 }
 
 class GaugeProgress {
-  final bool enable;
-  final Align2 align;
-  final bool overlap;
-  final bool roundCap;
-  final bool clip;
-  final FormatterFun<double>? formatter;
-  final StyleFun<double, LineStyle>? styleFun;
-  final LineStyle? backgroundStyle;
-  final GaugeProgress? progress;
+  bool enable;
+  Align2 align;
+  bool overlap;
+  bool roundCap;
+  bool clip;
+  FormatterFun<double>? formatter;
+  StyleFun<double, LineStyle>? styleFun;
+  LineStyle? backgroundStyle;
+  GaugeProgress? progress;
 
   GaugeProgress(
       {this.enable = true,
@@ -65,9 +65,16 @@ class GaugeProgress {
 }
 
 class GaugeData {
-  final int axisIndex;
-  final DynamicData data;
-  final GaugePoint? point;
+  late final String id;
+  int axisIndex;
+  DynamicData data;
+  GaugePoint? point;
 
-  GaugeData(this.data, {this.axisIndex = 0, this.point});
+  GaugeData(this.data, {this.axisIndex = 0, this.point, String? id}) {
+    if (id == null || id.isEmpty) {
+      this.id = randomId();
+    } else {
+      this.id = id;
+    }
+  }
 }

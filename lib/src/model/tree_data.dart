@@ -1,8 +1,11 @@
+import 'package:e_chart/e_chart.dart';
+
 class TreeData {
   final String? id;
-  final num value;
-  final String? label;
-  final List<TreeData> children;
+  num value;
+  List<TreeData> children;
+
+  DynamicText? label;
 
   TreeData(this.value, this.children, {this.label, this.id});
 
@@ -34,7 +37,7 @@ class TreeData {
 
   @override
   String toString() {
-    return (label == null || label!.isEmpty) ? '$value' : label!;
+    return (label == null || label!.isEmpty) ? '$value' : '$label';
   }
 
   static int computeDeep(TreeData data) {

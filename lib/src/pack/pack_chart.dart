@@ -159,7 +159,7 @@ class PackView extends SeriesView<PackSeries> {
       ///这里分开绘制是为了优化当存在textScaleFactory时文字高度计算有问题
       root.each((node, p1, p2) {
         if (node.data.label != null && node.data.label!.isNotEmpty) {
-          String label = node.data.label!;
+          DynamicText label = node.data.label!;
           LabelStyle? labelStyle = series.labelStyleFun?.call(node);
           if (labelStyle == null || !labelStyle.show) {
             return false;
