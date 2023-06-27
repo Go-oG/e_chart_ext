@@ -10,7 +10,7 @@ import '../tree_layout.dart';
 /// 并且所有的叶子节点总是占满对应的尺寸
 class D3DendrogramLayout extends TreeLayout {
   ///分隔函数，用于分隔节点间距
-  Fun2<TreeLayoutNode, TreeLayoutNode, num> splitFun = (a, b) {
+  Fun3<TreeLayoutNode, TreeLayoutNode, num> splitFun = (a, b) {
     return a.parent == b.parent ? 1 : 2;
   };
 
@@ -36,7 +36,7 @@ class D3DendrogramLayout extends TreeLayout {
   });
 
   @override
-  void onLayout(Context context, TreeLayoutNode root, num width, num height) {
+  void onLayout2(TreeLayoutNode root) {
     bool v = direction == Direction2.ttb || direction == Direction2.btt || direction == Direction2.v;
     num w = v ? width : height;
     num h = v ? height : width;

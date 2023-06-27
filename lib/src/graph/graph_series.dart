@@ -9,8 +9,8 @@ import 'graph_layout.dart';
 class GraphSeries extends RectSeries with SeriesGesture {
   Graph graph;
   GraphLayout layout;
-  Fun2<GraphNode, Size, ChartSymbol> symbolFun;
-  Fun2<GraphNode, GraphNode, LineStyle>? lineFun;
+  Fun3<GraphNode, Size, ChartSymbol> symbolFun;
+  Fun3<GraphNode, GraphNode, LineStyle>? lineFun;
 
   GraphSeries(
     this.graph,

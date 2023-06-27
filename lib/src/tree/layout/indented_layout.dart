@@ -25,7 +25,7 @@ class IndentedLayout extends TreeLayout {
   });
 
   @override
-  void onLayout(Context context, TreeLayoutNode root, num width, num height) {
+  void onLayout2(TreeLayoutNode root) {
     Direction2 direction = this.direction;
     if (direction != Direction2.ltr && direction != Direction2.rtl && direction != Direction2.h) {
       direction = Direction2.ltr;

@@ -1,7 +1,7 @@
 import 'package:chart_xutil/chart_xutil.dart';
 import 'package:e_chart/e_chart.dart';
 
-class GraphNode extends ItemData with ExtProps {
+class GraphNode extends ItemData with ExtProps,ViewStateProvider {
   ///节点索引
   int index = 0;
 

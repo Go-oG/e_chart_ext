@@ -12,15 +12,15 @@ class MindMapLayout extends TreeLayout {
     super.sizeFun,
     super.lineType = LineType.line,
     super.smooth = true,
-    super.center=const [SNumber.percent(50), SNumber.percent(50)],
-    super.centerIsRoot=true,
+    super.center = const [SNumber.percent(50), SNumber.percent(50)],
+    super.centerIsRoot = true,
     super.levelGapSize,
     super.nodeGapSize,
     super.nodeSize,
   });
 
   @override
-  void onLayout(Context context, TreeLayoutNode root, num width, num height) {
+  void onLayout2(TreeLayoutNode root) {
     if (root.childCount <= 1) {
       CompactLayout l = CompactLayout(
         levelAlign: Align2.start,
@@ -29,7 +29,7 @@ class MindMapLayout extends TreeLayout {
         levelGapFun: levelGapFun,
         sizeFun: sizeFun,
       );
-      l.onLayout(context, root, width, height);
+      l.onLayout2(root);
       return;
     }
     TreeLayoutNode leftRoot = TreeLayoutNode(null, root.data);
@@ -52,7 +52,7 @@ class MindMapLayout extends TreeLayout {
       levelGapFun: levelGapFun,
       sizeFun: sizeFun,
     );
-    leftLayout.onLayout(context, leftRoot, width, height);
+    leftLayout.onLayout2(leftRoot);
 
     CompactLayout rightLayout = CompactLayout(
       levelAlign: Align2.start,
@@ -61,7 +61,7 @@ class MindMapLayout extends TreeLayout {
       levelGapFun: levelGapFun,
       sizeFun: sizeFun,
     );
-    rightLayout.onLayout(context, rightRoot, width, height);
+    rightLayout.onLayout2(rightRoot);
 
     root.children.clear();
     for (var element in leftRoot.children) {

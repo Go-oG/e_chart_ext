@@ -21,7 +21,6 @@ class TreeView extends SeriesView<TreeSeries> {
   }
 
   void handleLayoutCommand() {
-    Command command = series.layout.value;
     invalidate();
   }
 
@@ -50,7 +49,7 @@ class TreeView extends SeriesView<TreeSeries> {
   void onLayout(double left, double top, double right, double bottom) {
     super.onLayout(left, top, right, bottom);
     var treeLayout = series.layout;
-    treeLayout.doLayout(context, series.data, width, height);
+    treeLayout.doLayout(context, series, series.data, selfBoxBound, LayoutAnimatorType.layout);
     transOffset = treeLayout.translationOffset;
   }
 
@@ -94,12 +93,12 @@ class TreeView extends SeriesView<TreeSeries> {
       return;
     }
     Size nodeSize = node.size;
-    series.symbolFun.call(node, nodeSize, null)!.draw(canvas, mPaint, offset);
+    series.symbolFun.call(node, nodeSize).draw(canvas, mPaint, offset, 1);
     DynamicText label = node.data.label ?? DynamicText.empty;
     if (label.isEmpty) {
       return;
     }
-    LabelStyle? style = series.labelStyleFun?.call(node, null);
+    LabelStyle? style = series.labelStyleFun?.call(node);
     TextDrawConfig config = TextDrawConfig(offset);
     style?.draw(canvas, mPaint, label, config);
   }
@@ -107,7 +106,7 @@ class TreeView extends SeriesView<TreeSeries> {
   void drawLine(Canvas canvas, TreeLayoutNode parent, TreeLayoutNode child) {
     Path? path = series.layout.getPath(parent, child);
     if (path != null) {
-      series.lineStyleFun.call(parent, child, null)?.drawPath(canvas, mPaint, path);
+      series.lineStyleFun.call(parent, child).drawPath(canvas, mPaint, path);
     }
   }
 }

@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:e_chart/e_chart.dart';
 
 import '../node.dart';
@@ -10,8 +8,8 @@ class ResquareLayout extends TreemapLayout {
   double rowsRatio = phi;
 
   @override
-  void doLayout(Context context,TreeMapNode root, Rect area) {
-    resquarify(root, rowsRatio, area.left, area.top, area.right, area.bottom);
+  void onLayout(TreeMapNode root, LayoutAnimatorType type) {
+    resquarify(root, rowsRatio, rect.left, rect.top, rect.right, rect.bottom);
   }
 
   static void resquarify(TreeMapNode parent, double ratio, double x0, double y0, double x1, double y1) {

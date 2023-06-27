@@ -22,7 +22,7 @@ class RadialTreeLayout extends TreeLayout {
   bool useTidy;
 
   ///只在 [useTidy]为true时使用
-  Fun2<TreeLayoutNode, TreeLayoutNode, num>? splitFun;
+  Fun3<TreeLayoutNode, TreeLayoutNode, num>? splitFun;
 
   RadialTreeLayout({
     this.rotateAngle = 0,
@@ -31,7 +31,7 @@ class RadialTreeLayout extends TreeLayout {
     this.clockwise = true,
     this.splitFun,
     super.center = const [SNumber.percent(50), SNumber.percent(50)],
-    super.centerIsRoot=true,
+    super.centerIsRoot = true,
     super.lineType = LineType.line,
     super.gapFun,
     super.levelGapFun,
@@ -42,7 +42,7 @@ class RadialTreeLayout extends TreeLayout {
   });
 
   @override
-  void onLayout(Context context, TreeLayoutNode root, num width, num height) {
+  void onLayout2(TreeLayoutNode root) {
     Offset center = Offset(this.center[0].convert(width), this.center[1].convert(height));
     int maxDeep = root.findMaxDeep();
     num maxH = 0;
@@ -89,7 +89,8 @@ class RadialTreeLayout extends TreeLayout {
     if (splitFun != null) {
       layout.splitFun = splitFun!;
     }
-    layout.onLayout(context, root, sweepAngle, radius);
+    layout.rect = Rect.fromLTWH(0, 0, sweepAngle.toDouble(), radius.toDouble());
+    layout.onLayout2(root);
   }
 
   void _layoutForTidy(Context context, TreeLayoutNode root, num sweepAngle, num radius) {
@@ -97,6 +98,7 @@ class RadialTreeLayout extends TreeLayout {
     if (splitFun != null) {
       layout.splitFun = splitFun!;
     }
-    layout.onLayout(context, root, sweepAngle, radius);
+    layout.rect = Rect.fromLTWH(0, 0, sweepAngle.toDouble(), radius.toDouble());
+    layout.onLayout2(root);
   }
 }

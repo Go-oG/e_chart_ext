@@ -3,9 +3,9 @@ import 'package:e_chart/e_chart.dart';
 import 'package:flutter/widgets.dart';
 import '../model/tree_data.dart';
 import 'node.dart';
+import 'tree_series.dart';
 
-abstract class TreeLayout extends ChartLayout {
-
+abstract class TreeLayout extends ChartLayout<TreeSeries, TreeData> {
   ///描述根节点的位置
   List<SNumber> center;
   bool centerIsRoot;
@@ -18,15 +18,15 @@ abstract class TreeLayout extends ChartLayout {
 
   ///节点大小配置
   Size? nodeSize;
-  Fun1<TreeLayoutNode, Size>? sizeFun;
+  Fun2<TreeLayoutNode, Size>? sizeFun;
 
   ///节点之间的间距函数
   Offset? nodeGapSize;
-  Fun2<TreeLayoutNode, TreeLayoutNode, Offset>? gapFun;
+  Fun3<TreeLayoutNode, TreeLayoutNode, Offset>? gapFun;
 
   ///节点之间的层级间距函数优先级：fun> levelGapSize
   num? levelGapSize;
-  Fun2<int, int, num>? levelGapFun;
+  Fun3<int, int, num>? levelGapFun;
   Offset _transOffset = Offset.zero;
 
   TreeLayout({
@@ -49,18 +49,12 @@ abstract class TreeLayout extends ChartLayout {
   ///外部传入的数据映射
   ///所有的操作都是对该树进行操作
   TreeLayoutNode _rootNode = TreeLayoutNode(null, TreeData(0));
-  Context? _context;
-  num width = 0;
-  num height = 0;
 
   ///记录节点数
   int nodeCount = 0;
 
-  @mustCallSuper
-  void doLayout(Context context, TreeData data, num width, num height) {
-    _context = context;
-    this.width = width;
-    this.height = height;
+  @override
+  void onLayout(TreeData data, LayoutAnimatorType type) {
     _nodeMap = {};
     _rootNode = toTree<TreeData, TreeLayoutNode>(data, (p0) => p0.children, (p0, p1) {
       TreeLayoutNode node = TreeLayoutNode(p0, p1);
@@ -76,10 +70,6 @@ abstract class TreeLayout extends ChartLayout {
   }
 
   void _startLayout(TreeLayoutNode root, [bool notify = true]) {
-    if (_context == null) {
-      throw FlutterError('在调用该方法前，必须先调用doLayout一次');
-    }
-
     ///计算树的深度和高度
     computeDeepAndHeight(root);
 
@@ -92,7 +82,7 @@ abstract class TreeLayout extends ChartLayout {
     });
 
     ///开始布局
-    onLayout(_context!, root, width, height);
+    onLayout2(root);
 
     ///布局完成计算偏移量并更新节点
     double x = center[0].convert(width);
@@ -104,6 +94,7 @@ abstract class TreeLayout extends ChartLayout {
     }
     dx = x - c.dx;
     dy = y - c.dy;
+
     ///布局完成后，需要再次更新节点位置和大小
     _transOffset = Offset.zero;
     root.each((node, index, startNode) {
@@ -117,7 +108,7 @@ abstract class TreeLayout extends ChartLayout {
     }
   }
 
-  void onLayout(Context context, TreeLayoutNode root, num width, num height);
+  void onLayout2(TreeLayoutNode root);
 
   TreeLayoutNode get rootNode => _rootNode;
 
@@ -264,7 +255,7 @@ abstract class TreeLayout extends ChartLayout {
     Map<TreeData, Size> sizeMap, [
     VoidCallback? endCallback,
   ]) {
-    ChartDoubleTween tween = ChartDoubleTween(0, 1, duration: const Duration(milliseconds: 600));
+    ChartDoubleTween tween = ChartDoubleTween(props: series.animatorProps);
     OffsetTween offsetTween = OffsetTween(Offset.zero, Offset.zero);
     ChartSizeTween sizeTween = ChartSizeTween(Size.zero, Size.zero);
     tween.addListener(() {
@@ -285,23 +276,15 @@ abstract class TreeLayout extends ChartLayout {
       notifyLayoutUpdate();
     });
     if (endCallback != null) {
-      tween.statusListener = (s) {
-        if (s == AnimationStatus.dismissed || s == AnimationStatus.completed) {
-          endCallback.call();
-        }
+      tween.endListener = () {
+        endCallback.call();
       };
     }
-    tween.start(_context!);
+    tween.start(context, true);
   }
 
   TreeLayoutNode? findNode(Offset local) {
     return rootNode.findNodeByOffset(local);
-  }
-
-  @override
-  void dispose() {
-    _context = null;
-    super.dispose();
   }
 
   ///========普通函数=============

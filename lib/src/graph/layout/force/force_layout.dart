@@ -50,10 +50,10 @@ class ForceLayout extends GraphLayout {
   }
 
   @override
-  void doLayout(Context context, Graph graph, num width, num height) {
+  void onLayout(Graph data, LayoutAnimatorType type) {
     stop();
     if (_simulation == null) {
-      _simulation = _initSimulation(context, graph, width, height);
+      _simulation = _initSimulation(context, data, width, height);
       _simulation?.addListener(() {
         if (hasInterrupted) {
           stop();
@@ -108,4 +108,5 @@ class ForceLayout extends GraphLayout {
     }
     return simulation;
   }
+
 }

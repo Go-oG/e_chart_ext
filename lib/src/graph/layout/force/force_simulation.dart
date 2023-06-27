@@ -190,7 +190,7 @@ class ForceSimulation extends ChangeNotifier {
 
   ForceSimulation stop() {
     if (_controller != null) {
-      context.animationManager.remove(_controller!);
+      context.removeAnimation(_controller);
       _controller = null;
     }
     _optCount = 0;

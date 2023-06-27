@@ -17,7 +17,7 @@ class HexbinView extends SeriesView<HexbinSeries> {
     for (var data in series.data) {
       nodeList.add(HexbinNode(data));
     }
-    series.layout.doLayout(context,series, nodeList, width, height);
+    series.layout.doLayout(context,series, nodeList, selfBoxBound,LayoutAnimatorType.layout);
   }
 
   @override

@@ -34,8 +34,8 @@ class HexRectLayout extends HexbinLayout {
       super.radius});
 
   @override
-  void onLayout(HexbinSeries series, List<HexbinNode> nodes, num width, num height) {
-    List<int> tl = computeRowAndCol(nodes.length, width, height, radius);
+  void onLayout(List<HexbinNode> data, LayoutAnimatorType type) {
+    List<int> tl = computeRowAndCol(data.length, width, height, radius);
     row = tl[0];
     col = tl[1];
     int left = 0, top = 0, right = col, bottom = row;
@@ -53,7 +53,7 @@ class HexRectLayout extends HexbinLayout {
         }
       }
     }
-    each(nodes, (node, i) {
+    each(data, (node, i) {
       node.hex = hexList[i];
     });
   }

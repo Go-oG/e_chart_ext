@@ -1,7 +1,7 @@
 import 'package:e_chart/e_chart.dart';
 import 'package:flutter/cupertino.dart';
 
-class SankeyNode {
+class SankeyNode with ViewStateProvider{
   final List<SankeyLink> outLinks; //已当前节点为源的输出边(source)
   final List<SankeyLink> inputLinks; // 已当前节点为尾的输入边(target)
   final ItemData data;
@@ -35,7 +35,7 @@ class SankeyNode {
   }
 }
 
-class SankeyLink {
+class SankeyLink with ViewStateProvider{
   final SankeyNode source;
   final SankeyNode target;
   final double value;

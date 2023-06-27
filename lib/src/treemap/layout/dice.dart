@@ -9,11 +9,11 @@ import '../node.dart';
 class DiceLayout extends TreemapLayout {
 
   @override
-  void doLayout(Context context,TreeMapNode root, Rect area) {
+  void onLayout(TreeMapNode root,LayoutAnimatorType type) {
     if (root.notChild) {
       return;
     }
-    layoutChildren(area, root.children);
+    layoutChildren(rect, root.children);
   }
 
   static void layoutChildren(Rect area, List<TreeMapNode> nodeList) {

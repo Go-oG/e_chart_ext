@@ -9,8 +9,8 @@ import '../node.dart';
 /// 从上到下
 class SliceLayout extends TreemapLayout {
   @override
-  void doLayout(Context context,TreeMapNode root, Rect area) {
-    layoutChildren(area, root.children);
+  void onLayout(TreeMapNode root, LayoutAnimatorType type) {
+    layoutChildren(rect, root.children);
   }
 
   ///从上到下

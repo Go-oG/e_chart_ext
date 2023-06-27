@@ -8,12 +8,12 @@ class PackSeries extends RectSeries {
   TreeData data;
   bool optTextDraw;
   Color? backgroundColor;
-  Fun1<PackNode, AreaStyle> areaStyleFun;
-  Fun1<PackNode, LabelStyle?>? labelStyleFun;
-  Fun1<PackNode, num>? paddingFun;
-  Fun1<PackNode, num>? radiusFun;
-  Fun2<PackNode, PackNode, int>? sortFun;
-  ValueCallback<TreeData>? onClick;
+  Fun2<PackNode, AreaStyle> areaStyleFun;
+  Fun2<PackNode, LabelStyle?>? labelStyleFun;
+  Fun2<PackNode, num>? paddingFun;
+  Fun2<PackNode, num>? radiusFun;
+  Fun3<PackNode, PackNode, int>? sortFun;
+  VoidFun1<TreeData>? onClick;
 
   PackSeries(
     this.data, {

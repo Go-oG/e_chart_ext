@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:e_chart/e_chart.dart';
 
 import 'dice.dart';
@@ -10,11 +8,11 @@ import 'slice.dart';
 class SliceDiceLayout extends TreemapLayout {
 
   @override
-  void doLayout(Context context,TreeMapNode root, Rect area) {
+  void onLayout(TreeMapNode root, LayoutAnimatorType type) {
     if(root.deep%2==0){
-      SliceLayout.layoutChildren(area, root.children);
+      SliceLayout.layoutChildren(rect, root.children);
     }else{
-      DiceLayout.layoutChildren(area, root.children);
+      DiceLayout.layoutChildren(rect, root.children);
     }
   }
 }

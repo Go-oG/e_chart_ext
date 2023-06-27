@@ -4,11 +4,13 @@ import 'package:chart_xutil/chart_xutil.dart';
 import 'package:e_chart_ext/e_chart_ext.dart';
 import 'package:flutter/widgets.dart';
 
-class ThemeRiverLayout extends ChartLayout{
+class ThemeRiverLayout extends ChartLayout<ThemeRiverSeries,List<LayoutNode>>{
   num maxTransX = 0,
       maxTransY = 0;
 
-  void doLayout(Context context,ThemeRiverSeries series, List<LayoutNode> dataList, double width, double height) {
+  @override
+  void onLayout(List<LayoutNode> data, LayoutAnimatorType type) {
+    var dataList=data;
     if (dataList.isEmpty) {
       return;
     }
@@ -147,7 +149,7 @@ class _InnerNode {
   }
 }
 
-class LayoutNode {
+class LayoutNode with ViewStateProvider{
   final GroupData data;
   List<Offset> polygonList = [];
   int index = 0;

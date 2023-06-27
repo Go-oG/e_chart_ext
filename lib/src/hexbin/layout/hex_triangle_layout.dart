@@ -32,22 +32,22 @@ class HexTriangleLayout extends HexbinLayout {
   }
 
   @override
-  void doLayout(Context context,HexbinSeries series, List<HexbinNode> nodes, num width, num height) {
+  void doLayout(Context context, HexbinSeries series, List<HexbinNode> data, Rect rect, LayoutAnimatorType type) {
     checkFlat();
-    super.doLayout(context,series, nodes, width, height);
+    super.doLayout(context, series, data, rect, type);
   }
 
   @override
-  void onLayout(HexbinSeries series, List<HexbinNode> nodes, num width, num height) {
+  void onLayout(List<HexbinNode> data, LayoutAnimatorType type) {
     Direction2 direction = this.direction;
     if (direction == Direction2.v) {
       direction = Direction2.ttb;
     } else if (direction == Direction2.h) {
       direction = Direction2.ltr;
     }
-    _level = computeLevel(nodes.length);
+    _level = computeLevel(data.length);
     List<Hex> hexList = triangle(_level, direction);
-    each(nodes, (node, i) {
+    each(data, (node, i) {
       node.hex = hexList[i];
     });
   }
@@ -75,7 +75,7 @@ class HexTriangleLayout extends HexbinLayout {
         d = (c + 1) * h + (c * radius);
       }
       d = d / 2;
-      d-=radius;
+      d -= radius;
       cy = direction == Direction2.ttb ? y - d : y + d;
       return Offset(cx, cy);
     } else {
@@ -92,7 +92,7 @@ class HexTriangleLayout extends HexbinLayout {
       }
       d = d / 2;
       d -= radius;
-      cx = direction == Direction2.ltr ?x - d : x + d;
+      cx = direction == Direction2.ltr ? x - d : x + d;
       return Offset(cx, cy);
     }
   }

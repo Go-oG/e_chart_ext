@@ -23,11 +23,11 @@ class SunburstSeries extends RectSeries {
   SelectedMode selectedMode; //选中模式的配置
   RadiusDiffFun? radiusDiffFun; // 半径差值函数
   AreaStyle? backStyle; //返回区域样式
-  StyleFun<SunburstNode, AreaStyle> areaStyleFun; //填充区域的样式
-  StyleFun<SunburstNode, LabelStyle>? labelStyleFun; //文字标签的样式
-  StyleFun<SunburstNode, double>? rotateFun; // 标签旋转角度函数 -1 径向旋转 -2 切向旋转  >=0 旋转角度
-  StyleFun<SunburstNode, Align2>? labelAlignFun; // 标签对齐函数
-  StyleFun<SunburstNode, double>? labelMarginFun; // 标签对齐函数
+  Fun2<SunburstNode, AreaStyle> areaStyleFun; //填充区域的样式
+  Fun2<SunburstNode, LabelStyle>? labelStyleFun; //文字标签的样式
+  Fun2<SunburstNode, double>? rotateFun; // 标签旋转角度函数 -1 径向旋转 -2 切向旋转  >=0 旋转角度
+  Fun2<SunburstNode, Align2>? labelAlignFun; // 标签对齐函数
+  Fun2<SunburstNode, double>? labelMarginFun; // 标签对齐函数
 
   SunburstSeries(
     this.data, {

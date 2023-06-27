@@ -7,11 +7,11 @@ import 'layout/hex_layout.dart';
 class HexbinSeries extends RectSeries {
   HexbinLayout layout = HexagonsLayout();
   List<ItemData> data;
-  Fun1<HexbinNode, AreaStyle> styleFun;
-  Fun1<HexbinNode, LabelStyle>? labelStyleFun;
+  Fun2<HexbinNode, AreaStyle> styleFun;
+  Fun2<HexbinNode, LabelStyle>? labelStyleFun;
 
   ///半径函数(可单独对某一个节点设置其大小)
-  Fun1<HexbinNode, num?>? radiusFun;
+  Fun2<HexbinNode, num?>? radiusFun;
   bool clock = false;
 
   HexbinSeries(

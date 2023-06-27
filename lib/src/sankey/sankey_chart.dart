@@ -165,7 +165,7 @@ class SankeyView extends SeriesView<SankeySeries> {
   void onLayout(double left, double top, double right, double bottom) {
     super.onLayout(left, top, right, bottom);
     SankeyLayout layout = SankeyLayout(series);
-    layout.doLayout(context, series.data, series.links, width, height);
+    layout.doLayout(context, series, series.data, selfBoxBound, LayoutAnimatorType.layout);
     _nodeList = layout.nodes;
     _linkList = layout.links;
   }
@@ -174,7 +174,7 @@ class SankeyView extends SeriesView<SankeySeries> {
   void onDraw(Canvas canvas) {
     _drawLink(canvas);
     for (var element in _nodeList) {
-      AreaStyle style = series.nodeStyle.call(element.data, null)!;
+      AreaStyle style = series.nodeStyle.call(element.data);
       style.drawRect(canvas, mPaint, element.rect);
     }
   }
@@ -182,7 +182,7 @@ class SankeyView extends SeriesView<SankeySeries> {
   void _drawLink(Canvas canvas) {
     AreaStyle tmpStyle = const AreaStyle(color: Colors.black26);
     for (var link in _linkList) {
-      AreaStyle? style = series.linkStyleFun?.call(link.source.data, link.target.data, null);
+      AreaStyle? style = series.linkStyleFun?.call(link.source.data, link.target.data);
       style ??= tmpStyle;
       style.drawPath(canvas, mPaint, link.path);
     }

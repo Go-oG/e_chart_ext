@@ -37,18 +37,19 @@ class CircularLayout extends GraphLayout {
   });
 
   @override
-  void doLayout(Context context, Graph graph, num width, num height) {
+  void onLayout(Graph data, LayoutAnimatorType type) {
     stopLayout();
     clearInterrupt();
     if (workerThread) {
       Future.doWhile(() {
-        runLayout(context, graph, width, height);
+        runLayout(context, data, width, height);
         return false;
       });
     } else {
-      runLayout(context, graph, width, height);
+      runLayout(context, data, width, height);
     }
   }
+
 
   @override
   void stopLayout() {
@@ -138,6 +139,8 @@ class CircularLayout extends GraphLayout {
     }
     return [startR, endR, rStep];
   }
+
+
 }
 
 Map<GraphNode, num> _defaultSort(Graph graph, List<GraphNode> list, [int type = 0]) {

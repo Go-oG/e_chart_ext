@@ -6,48 +6,43 @@ import 'package:flutter/material.dart';
 import 'sunburst_series.dart';
 
 /// 旭日图布局计算(以中心点为计算中心)
-class SunburstLayout extends ChartLayout {
-  num width = 0;
-  num height = 0;
+class SunburstLayout extends ChartLayout<SunburstSeries,SunburstNode> {
   num minRadius = 0;
   num maxRadius = 0;
   num radius = 0;
-  late SunburstSeries series;
 
   ///给定根节点和待布局的节点进行数据的布局
-  void doLayout(Context context, SunburstSeries series, SunburstNode root, SunburstNode node, num width, num height) {
-    this.width = width;
-    this.height = height;
-    this.series = series;
-    List<num> radiusList = computeRadius(width, height);
-    minRadius = radiusList[0];
-    maxRadius = radiusList[1];
-    radius = radiusList[2];
-
-    int deep = node.height;
-
-    ///深度
-    if (node != root) {
-      deep += 1;
-    }
-
-    num diff = radius / deep;
-    Arc arc = buildRootArc(root, node);
-    node.cur = SunburstInfo(arc);
-    node.start = node.cur.copy();
-    node.end = node.cur.copy();
-    node.updatePath(series, 1);
-    int deepOffset = node == root ? 0 : 1;
-    node.eachBefore((tmp, index, startNode) {
-      if (tmp.hasChild) {
-        num rd = diff;
-        if (series.radiusDiffFun != null) {
-          rd = series.radiusDiffFun!.call(node.height - tmp.height + deepOffset, deep, radius).convert(radius);
-        }
-        _layoutChildren(tmp, rd);
-      }
-      return false;
-    });
+  @override
+  void onLayout(SunburstNode root, LayoutAnimatorType type) {
+    // List<num> radiusList = computeRadius(width, height);
+    // minRadius = radiusList[0];
+    // maxRadius = radiusList[1];
+    // radius = radiusList[2];
+    //
+    // int deep = root.height;
+    //
+    // ///深度
+    // if (node != root) {
+    //   deep += 1;
+    // }
+    //
+    // num diff = radius / deep;
+    // Arc arc = buildRootArc(root, node);
+    // node.cur = SunburstInfo(arc);
+    // node.start = node.cur.copy();
+    // node.end = node.cur.copy();
+    // node.updatePath(series, 1);
+    // int deepOffset = node == root ? 0 : 1;
+    // node.eachBefore((tmp, index, startNode) {
+    //   if (tmp.hasChild) {
+    //     num rd = diff;
+    //     if (series.radiusDiffFun != null) {
+    //       rd = series.radiusDiffFun!.call(node.height - tmp.height + deepOffset, deep, radius).convert(radius);
+    //     }
+    //     _layoutChildren(tmp, rd);
+    //   }
+    //   return false;
+    // });
   }
 
   void _layoutChildren(SunburstNode parent, num radiusDiff) {
@@ -129,7 +124,7 @@ class SunburstLayout extends ChartLayout {
   }
 }
 
-class SunburstNode extends TreeNode<SunburstNode> {
+class SunburstNode extends TreeNode<SunburstNode> with ViewStateProvider {
   final TreeData data;
   SunburstInfo cur = SunburstInfo.zero; // 当前帧
   SunburstInfo start = SunburstInfo.zero; //动画开始帧
@@ -173,20 +168,20 @@ class SunburstInfo {
     if (node.data.label == null || node.data.label!.isEmpty) {
       return;
     }
-    LabelStyle? style = series.labelStyleFun?.call(node, null);
+    LabelStyle? style = series.labelStyleFun?.call(node);
     if (style == null) {
       return;
     }
     double originAngle = arc.startAngle + arc.sweepAngle / 2;
     Size size = style.measure(node.data.label!, maxWidth: arc.outRadius - arc.innerRadius);
-    double labelMargin = series.labelMarginFun?.call(node, null) ?? 0;
+    double labelMargin = series.labelMarginFun?.call(node) ?? 0;
     if (labelMargin > 0) {
       size = Size(size.width + labelMargin, size.height);
     }
 
     double dx = m.cos(originAngle * Constants.angleUnit) * (arc.innerRadius + arc.outRadius) / 2;
     double dy = m.sin(originAngle * Constants.angleUnit) * (arc.innerRadius + arc.outRadius) / 2;
-    Align2 align = series.labelAlignFun?.call(node, null) ?? Align2.start;
+    Align2 align = series.labelAlignFun?.call(node) ?? Align2.start;
     if (align == Align2.start) {
       dx = m.cos(originAngle * Constants.angleUnit) * (arc.innerRadius + size.width / 2);
       dy = m.sin(originAngle * Constants.angleUnit) * (arc.innerRadius + size.width / 2);
@@ -196,7 +191,7 @@ class SunburstInfo {
     }
     textPosition = Offset(dx, dy);
 
-    double rotateMode = series.rotateFun?.call(node, null) ?? -1;
+    double rotateMode = series.rotateFun?.call(node) ?? -1;
     double rotateAngle = 0;
 
     if (rotateMode <= -2) {

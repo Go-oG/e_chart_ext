@@ -10,8 +10,10 @@ import '../node.dart';
 /// 为宽矩形选择水平分区，为高矩形选择垂直分区的布局方式。
 /// 由于权重只能为int 因此内部会进行相关的double->int的转换
 class BinaryLayout extends TreemapLayout {
+
   @override
-  void doLayout(Context context,TreeMapNode root, Rect area) {
+  void onLayout(TreeMapNode root,LayoutAnimatorType type) {
+    Rect area=rect;
     BinaryNode binaryNode = _convertToBinaryNode(null, root, false);
     binaryNode.x = area.center.dx;
     binaryNode.y = area.center.dy;

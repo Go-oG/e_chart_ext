@@ -6,8 +6,8 @@ class ThemeRiverSeries extends RectSeries {
   SNumber? minInterval;
   bool smooth;
   double smoothRatio;
-  StyleFun<GroupData, AreaStyle> areaStyleFun;
-  StyleFun<GroupData, LabelStyle>? labelStyleFun;
+  Fun2<GroupData, AreaStyle> areaStyleFun;
+  Fun2<GroupData, LabelStyle>? labelStyleFun;
 
   ThemeRiverSeries(
     this.data, {

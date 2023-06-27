@@ -11,8 +11,6 @@ class GraphView extends SeriesView<GraphSeries> {
   @override
   void onStart() {
     super.onStart();
-    unBindSeries();
-    bindSeriesCommand(series);
     series.layout.addListener(handleLayoutCommand);
     context.addGesture(gesture);
     series.bindGesture(this, gesture);
@@ -21,7 +19,7 @@ class GraphView extends SeriesView<GraphSeries> {
   @override
   void onRelayoutCommand(Command c) {
     series.layout.stopLayout();
-    series.layout.doLayout(context, series.graph, width, height);
+    series.layout.doLayout(context,series, series.graph, selfBoxBound,LayoutAnimatorType.update);
   }
 
   void handleLayoutCommand() {
@@ -44,9 +42,9 @@ class GraphView extends SeriesView<GraphSeries> {
   @override
   void onLayout(double left, double top, double right, double bottom) {
     super.onLayout(left, top, right, bottom);
-    gesture.rect = areaBounds;
+    gesture.rect = boxBounds;
     series.layout.stopLayout();
-    series.layout.doLayout(context, series.graph, width, height);
+    series.layout.doLayout(context,series, series.graph,selfBoxBound,LayoutAnimatorType.layout);
   }
 
   @override
@@ -67,12 +65,12 @@ class GraphView extends SeriesView<GraphSeries> {
       } else {
         line = Line(edge.points);
       }
-      style.drawPath(canvas, mPaint, line.toPath(false), drawDash: true);
+      style.drawPath(canvas, mPaint, line.toPath(false),  true);
     }
     for (var node in series.graph.nodes) {
       Offset offset = Offset(node.x, node.y);
       ChartSymbol symbol = series.symbolFun.call(node, series.layout.getNodeSize(node));
-      symbol.draw(canvas, mPaint, offset);
+      symbol.draw(canvas, mPaint, offset,1);
     }
     canvas.restore();
   }

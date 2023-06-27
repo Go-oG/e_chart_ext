@@ -14,7 +14,7 @@ import '../graph_layout.dart';
 ///Ref:https://github.com/antvis/layout/blob/master/src/layout/mds.ts
 class MDSLayout extends GraphLayout {
   List<SNumber> center;
-  Fun2<GraphNode, GraphNode, num>? distanceFun;
+  Fun3<GraphNode, GraphNode, num>? distanceFun;
   num linkDistance;
 
   ///存储距离矩阵
@@ -33,16 +33,16 @@ class MDSLayout extends GraphLayout {
   });
 
   @override
-  void doLayout(Context context, Graph graph, num width, num height) {
+  void onLayout(Graph data, LayoutAnimatorType type){
     stopLayout();
     clearInterrupt();
     if (workerThread) {
       Future.doWhile(() {
-        runLayout(context, graph, width, height);
+        runLayout(context, data, width, height);
         return false;
       });
     } else {
-      runLayout(context, graph, width, height);
+      runLayout(context, data, width, height);
     }
   }
 

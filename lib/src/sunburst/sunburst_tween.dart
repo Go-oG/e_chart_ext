@@ -7,13 +7,7 @@ class SunburstTween extends ChartTween<SunburstInfo> {
     super.begin,
     super.end, {
     bool allowCross = false,
-    super.duration,
-    super.reverseDuration,
-    super.behavior,
-    super.curve,
-    super.lowerBound,
-    super.upperBound,
-    super.delay,
+    super.props,
   });
 
   @override

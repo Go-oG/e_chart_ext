@@ -23,7 +23,7 @@ class GaugeView extends ChartView {
     super.onStart();
     context.addGesture(gesture);
     gesture.edgeFun = (offset) {
-      return globalAreaBound.contains(offset);
+      return globalBoxBound.contains(offset);
     };
   }
 

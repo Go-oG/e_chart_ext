@@ -14,27 +14,27 @@ class TreeMapSeries extends RectSeries {
   //表示展示几层，从当前层次开始计算
   // 如果<=0 则展示全部
   int showDepth;
-  StyleFun<TreeMapNode, AreaStyle?> areaStyleFun;
-  StyleFun<TreeMapNode, LabelStyle?>? labelStyleFun;
+  Fun2<TreeMapNode, AreaStyle?> areaStyleFun;
+  Fun2<TreeMapNode, LabelStyle?>? labelStyleFun;
 
   ///标签文字对齐位置
-  Fun1<TreeMapNode, Alignment>? alignFun;
+  Fun2<TreeMapNode, Alignment>? alignFun;
 
-  Fun1<TreeMapNode, num>? paddingInner;
+  Fun2<TreeMapNode, num>? paddingInner;
 
-  Fun1<TreeMapNode, num>? paddingTop;
+  Fun2<TreeMapNode, num>? paddingTop;
 
-  Fun1<TreeMapNode, num>? paddingRight;
+  Fun2<TreeMapNode, num>? paddingRight;
 
-  Fun1<TreeMapNode, num>? paddingBottom;
+  Fun2<TreeMapNode, num>? paddingBottom;
 
-  Fun1<TreeMapNode, num>? paddingLeft;
+  Fun2<TreeMapNode, num>? paddingLeft;
 
-  Fun2<TreeMapNode, TreeMapNode, int>? sortFun = (a, b) {
+  Fun3<TreeMapNode, TreeMapNode, int>? sortFun = (a, b) {
     return b.value.compareTo(a.value);
   };
 
-  ValueCallback<TreeData>? onClick;
+  VoidFun1<TreeData>? onClick;
 
   TreeMapSeries(
     this.data, {

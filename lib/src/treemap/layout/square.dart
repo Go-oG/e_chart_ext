@@ -11,15 +11,14 @@ import 'slice.dart';
 double phi = (1 + m.sqrt(5)) / 2;
 
 class SquareLayout extends TreemapLayout {
-
-  num ratio=phi;
+  num ratio = phi;
 
   @override
-  void doLayout(Context context,TreeMapNode root, Rect area) {
+  void onLayout(TreeMapNode root, LayoutAnimatorType type) {
     root.children.sort((a, b) {
       return b.value.compareTo(a.value);
     });
-    layoutChildren(ratio, root, area.left, area.top, area.right, area.bottom);
+    layoutChildren(ratio, root, rect.left, rect.top, rect.right, rect.bottom);
   }
 
   static List<Row> layoutChildren(num ratio, TreeMapNode parent, double left, double top, double right, double bottom) {

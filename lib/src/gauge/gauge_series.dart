@@ -8,7 +8,7 @@ class GaugeSeries extends RectSeries {
   List<SNumber> center;
   List<AngleAxis> axisList;
   List<GaugeData> groupList;
-  StyleFun<GaugeData, LabelStyle>? labelStyleFun;
+  Fun2<GaugeData, LabelStyle>? labelStyleFun;
 
   GaugeSeries({
     this.radius = const SNumber(75, true),
@@ -47,8 +47,8 @@ class GaugeProgress {
   bool overlap;
   bool roundCap;
   bool clip;
-  FormatterFun<double>? formatter;
-  StyleFun<double, LineStyle>? styleFun;
+  Fun2<double,String>? formatter;
+  Fun2<double, LineStyle>? styleFun;
   LineStyle? backgroundStyle;
   GaugeProgress? progress;
 

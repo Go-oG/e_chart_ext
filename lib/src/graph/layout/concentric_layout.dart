@@ -34,7 +34,7 @@ class ConcentricLayout extends GraphLayout {
   num? maxLevelDiff;
 
   ///权重函数
-  Fun1<GraphNode, num> weightFun = (a) {
+  Fun2<GraphNode, num> weightFun = (a) {
     return a.weight;
   };
 
@@ -48,7 +48,7 @@ class ConcentricLayout extends GraphLayout {
     this.maxLevelDiff,
     this.preventOverlap = true,
     this.maxIterations = 360,
-    Fun1<GraphNode, num>? weightFun,
+    Fun2<GraphNode, num>? weightFun,
     super.nodeSize,
     super.nodeSpaceFun,
     super.sizeFun,
@@ -60,16 +60,16 @@ class ConcentricLayout extends GraphLayout {
   }
 
   @override
-  void doLayout(Context context, Graph graph, num width, num height) {
+  void onLayout(Graph data, LayoutAnimatorType type) {
     stopLayout();
     clearInterrupt();
     if (workerThread) {
       Future.doWhile(() {
-        runLayout(context, graph, width, height);
+        runLayout(context, data, width, height);
         return false;
       });
     } else {
-      runLayout(context, graph, width, height);
+      runLayout(context, data, width, height);
     }
   }
 

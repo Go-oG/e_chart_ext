@@ -25,16 +25,16 @@ class RandomLayout extends GraphLayout {
   });
 
   @override
-  void doLayout(Context context, Graph graph, num width, num height) {
+  void onLayout(Graph data, LayoutAnimatorType type) {
     stopLayout();
     clearInterrupt();
     if (workerThread) {
       Future.doWhile(() {
-        runLayout(context, graph, width, height);
+        runLayout(context, data, width, height);
         return false;
       });
     } else {
-      runLayout(context, graph, width, height);
+      runLayout(context, data, width, height);
     }
   }
 
@@ -101,4 +101,6 @@ class RandomLayout extends GraphLayout {
     });
     return covered;
   }
+
+
 }

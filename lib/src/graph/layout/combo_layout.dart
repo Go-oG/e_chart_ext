@@ -12,7 +12,7 @@ class ComboLayout extends GraphLayout {
   GraphLayout outerLayout;
 
   ///用于划分节点
-  Fun1<Graph, List<Combo>> comboFun;
+  Fun2<Graph, List<Combo>> comboFun;
 
   ComboLayout({
     required this.outerLayout,
@@ -27,24 +27,24 @@ class ComboLayout extends GraphLayout {
   List<Combo> _comboList = [];
 
   @override
-  void doLayout(Context context, Graph graph, num width, num height) {
+  void onLayout(Graph data, LayoutAnimatorType type) {
     stopLayout();
     clearInterrupt();
     try {
       if (workerThread) {
         Future.doWhile(() {
-          runLayout(context, graph, width, height);
+          runLayout(context, data, width, height);
           return false;
         });
       } else {
-        runLayout(context, graph, width, height);
+        runLayout(context, data, width, height);
       }
     } catch (e) {
       debugPrint('异常:$e');
     }
   }
 
-  void runLayout(Context context, Graph graph, num width, num height) {
+  void runLayout(Context context, Graph graph, double width, double height) {
     List<Combo> comboList = comboFun.call(graph);
     if (comboList.isEmpty) {
       return;
@@ -69,7 +69,8 @@ class ComboLayout extends GraphLayout {
     outerLayout.addListener(() {
       innerLayout();
     });
-    outerLayout.doLayout(context, rootGraph, width, height);
+
+    outerLayout.doLayout(context, series, rootGraph, Rect.fromLTWH(0, 0, width, height), LayoutAnimatorType.none);
   }
 
   void _doInnerLayout(Context context, Combo combo) {
@@ -111,7 +112,13 @@ class ComboLayout extends GraphLayout {
         notifyLayoutUpdate();
       }
     });
-    combo.layout.doLayout(context, combo.graph, size.width, size.height);
+    combo.layout.doLayout(
+      context,
+      series,
+      combo.graph,
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      LayoutAnimatorType.none,
+    );
   }
 
   @override

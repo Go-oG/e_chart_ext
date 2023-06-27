@@ -48,7 +48,7 @@ class PackView extends SeriesView<PackSeries> {
     double diffTx = (ntx - oldTx);
     double diffTy = (nty - oldTy);
 
-    ChartDoubleTween tween = ChartDoubleTween(0, 1, duration: const Duration(milliseconds: 500));
+    ChartDoubleTween tween = ChartDoubleTween(props: series.animatorProps);
     tween.addListener(() {
       var t = tween.value;
       scale = oldScale + scaleDiff * t;
@@ -56,10 +56,8 @@ class PackView extends SeriesView<PackSeries> {
       ty = oldTy + diffTy * t;
       invalidate();
     });
-    tween.statusListener = (s) {
-      if (s == AnimationStatus.completed || s == AnimationStatus.dismissed) {
-        this.tween = null;
-      }
+    tween.endListener = () {
+      this.tween = null;
     };
     this.tween = tween;
     tween.start(context);
@@ -138,7 +136,8 @@ class PackView extends SeriesView<PackSeries> {
     if (series.radiusFun != null) {
       layout.radius(series.radiusFun!);
     }
-    root = layout.doLayout(context,node);
+    root = node;
+    layout.doLayout(context, series, node, selfBoxBound, LayoutAnimatorType.layout);
     showNode = root;
   }
 

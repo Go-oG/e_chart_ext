@@ -15,7 +15,7 @@ class RadialParam {
   num? width;
   num? speed;
   num? gravity;
-  Fun1<GraphNode, num> nodeSizeFunc;
+  Fun2<GraphNode, num> nodeSizeFunc;
   num k;
   bool strictRadial;
 
@@ -44,7 +44,7 @@ class RadialForce {
   late num width;
   late num speed;
   late num gravity;
-  late Fun1<GraphNode, num> nodeSizeFunc;
+  late Fun2<GraphNode, num> nodeSizeFunc;
   late num k;
   late bool strictRadial;
   late List<GraphNode> nodes;

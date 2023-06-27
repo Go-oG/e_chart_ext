@@ -1,8 +1,9 @@
 import 'package:chart_xutil/chart_xutil.dart';
+import 'package:e_chart/e_chart.dart';
 
 import '../model/tree_data.dart';
 
-class PackNode extends TreeNode<PackNode> {
+class PackNode extends TreeNode<PackNode> with ViewStateProvider {
   final TreeData data;
   PackProps cur = PackProps(0, 0, 0);
   PackProps start = PackProps(0, 0, 0);

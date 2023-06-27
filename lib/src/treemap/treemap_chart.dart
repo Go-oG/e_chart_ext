@@ -118,7 +118,7 @@ class TreeMapView extends SeriesView<TreeMapSeries> {
   }
 
   void _drawNode(Canvas canvas, TreeMapNode node) {
-    AreaStyle? style = series.areaStyleFun.call(node, null);
+    AreaStyle? style = series.areaStyleFun.call(node);
     if (style == null || !style.show) {
       return;
     }
@@ -131,7 +131,7 @@ class TreeMapView extends SeriesView<TreeMapSeries> {
     if (rect.width * rect.height <= 300) {
       return;
     }
-    LabelStyle? labelStyle = series.labelStyleFun?.call(node, null);
+    LabelStyle? labelStyle = series.labelStyleFun?.call(node);
     if (labelStyle == null || !labelStyle.show) {
       return;
     }
@@ -247,9 +247,8 @@ class TreeMapView extends SeriesView<TreeMapSeries> {
     double oldTy = ty;
 
     /// 执行动画
-    Duration duration = const Duration(milliseconds: 500);
-    ChartRectTween rectTween = ChartRectTween(Rect.zero, Rect.zero, curve: Curves.linear, duration: duration);
-    ChartDoubleTween tween = ChartDoubleTween(0, 1, curve: Curves.linear, duration: duration);
+    ChartRectTween rectTween = ChartRectTween(Rect.zero, Rect.zero,props: series.animatorProps);
+    ChartDoubleTween tween = ChartDoubleTween(props: series.animatorProps);
     tween.addListener(() {
       double v = tween.value;
       tx = oldTx + diffTx * v;
@@ -261,6 +260,6 @@ class TreeMapView extends SeriesView<TreeMapSeries> {
       });
       invalidate();
     });
-    tween.start(context);
+    tween.start(context,true);
   }
 }

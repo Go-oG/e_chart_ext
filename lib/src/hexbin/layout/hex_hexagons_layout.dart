@@ -1,5 +1,6 @@
 import 'dart:math' as m;
 import 'package:chart_xutil/chart_xutil.dart';
+import 'package:e_chart/e_chart.dart';
 import 'package:flutter/widgets.dart';
 
 import '../hex.dart';
@@ -24,10 +25,10 @@ class HexagonsLayout extends HexbinLayout {
   }
 
   @override
-  void onLayout(HexbinSeries series, List<HexbinNode> nodes, num width, num height) {
-    int level = computeMinLevel(nodes.length);
+  void onLayout(List<HexbinNode> data, LayoutAnimatorType type) {
+    int level = computeMinLevel(data.length);
     List<Hex> hexList = hexagons(level);
-    each(nodes, (node, i) {
+    each(data, (node, i) {
       node.hex = hexList[i];
     });
   }

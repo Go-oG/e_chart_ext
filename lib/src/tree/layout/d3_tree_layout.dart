@@ -1,15 +1,13 @@
-import 'dart:ui';
 
 import 'package:chart_xutil/chart_xutil.dart';
 import 'package:e_chart/e_chart.dart';
-import 'package:flutter/widgets.dart';
 
 import '../node.dart';
 import '../tree_layout.dart';
 
 class D3TreeLayout extends TreeLayout {
   ///分离函数，用于决定两个节点(一般为兄弟节点)之间的间距
-  Fun2<TreeLayoutNode, TreeLayoutNode, num> splitFun = (a, b) {
+  Fun3<TreeLayoutNode, TreeLayoutNode, num> splitFun = (a, b) {
     ///对于Radial布局 一般设置为 (a.parent == b.parent ? 1 : 2) / a.depth;
     return a.parent == b.parent ? 1 : 2;
   };
@@ -32,7 +30,7 @@ class D3TreeLayout extends TreeLayout {
   });
 
   @override
-  void onLayout(Context context, TreeLayoutNode root, num width, num height) {
+  void onLayout2(TreeLayoutNode root) {
     num dx = width;
     num dy = height;
     InnerNode t = _treeRoot(root);

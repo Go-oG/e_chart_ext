@@ -1,20 +1,17 @@
 import 'dart:math';
 
-import 'package:e_chart/e_chart.dart';
+import 'package:e_chart_ext/e_chart_ext.dart';
 import 'package:flutter/widgets.dart';
 
-import '../model/graph/graph.dart';
-import '../model/graph/graph_node.dart';
-
-abstract class GraphLayout extends ChartLayout {
+abstract class GraphLayout extends ChartLayout<GraphSeries, Graph> {
   ///是否在工作线程中布局
   bool workerThread;
 
   ///节点大小获取优先级: Node.size>sizeFun>>nodeSize>default（8）
   Size? nodeSize;
-  Fun1<GraphNode, Size>? sizeFun;
-  Fun2<Graph, List<GraphNode>, Map<GraphNode, num>>? sort;
-  Fun1<GraphNode, num>? nodeSpaceFun;
+  Fun2<GraphNode, Size>? sizeFun;
+  Fun3<Graph, List<GraphNode>, Map<GraphNode, num>>? sort;
+  Fun2<GraphNode, num>? nodeSpaceFun;
 
   GraphLayout({
     this.nodeSize,
@@ -37,8 +34,6 @@ abstract class GraphLayout extends ChartLayout {
       super.notifyLayoutUpdate();
     }
   }
-
-  void doLayout(Context context, Graph graph, num width, num height);
 
   void stopLayout() {}
 

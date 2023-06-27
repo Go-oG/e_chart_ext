@@ -4,8 +4,7 @@ import 'sankey_align.dart';
 import 'sort.dart';
 
 class SankeySeries extends RectSeries {
-  List<ItemData> data;
-  List<SankeyLinkData> links;
+  SankeyData data;
   double nodeWidth;
   double gap;
   int iterationCount;
@@ -13,12 +12,11 @@ class SankeySeries extends RectSeries {
   NodeSort? nodeSort;
   LinkSort? linkSort;
   Direction direction;
-  StyleFun<ItemData, AreaStyle> nodeStyle;
-  StyleFun2<ItemData, ItemData, AreaStyle>? linkStyleFun;
+  Fun2<ItemData, AreaStyle> nodeStyle;
+  Fun3<ItemData, ItemData, AreaStyle>? linkStyleFun;
 
   SankeySeries({
     required this.data,
-    required this.links,
     this.nodeWidth = 16,
     this.gap = 8,
     this.iterationCount = 6,
@@ -50,6 +48,13 @@ class SankeySeries extends RectSeries {
           calendarIndex: -1,
           parallelIndex: -1,
         );
+}
+
+class SankeyData {
+  final List<ItemData> data;
+  final List<SankeyLinkData> links;
+
+  SankeyData(this.data, this.links);
 }
 
 class SankeyLinkData {

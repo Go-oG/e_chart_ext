@@ -25,7 +25,7 @@ class DendrogramLayout extends TreeLayout {
   });
 
   @override
-  void onLayout(Context context, TreeLayoutNode root, num width, num height) {
+  void onLayout2(TreeLayoutNode root){
     List<num> yList = List.filled(root.height + 1, 0);
     for (int i = 1; i <= root.height; i++) {
       num levelGap = getLevelGap(i - 1, i);

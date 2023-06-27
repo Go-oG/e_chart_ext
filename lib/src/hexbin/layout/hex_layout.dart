@@ -9,7 +9,7 @@ import '../hex_bin_node.dart';
 import '../hex_bin_series.dart';
 
 ///正六边形布局
-abstract class HexbinLayout extends ChartLayout{
+abstract class HexbinLayout extends ChartLayout<HexbinSeries, List<HexbinNode>> {
   static const double _sqrt3 = 1.7320508; //sqrt(3)
   static const Orientation _pointy = Orientation(_sqrt3, _sqrt3 / 2.0, 0.0, 3.0 / 2.0, _sqrt3 / 3.0, -1.0 / 3.0, 0.0, 2.0 / 3.0, 90);
   static const Orientation _flat = Orientation(3.0 / 2.0, 0.0, _sqrt3 / 2.0, _sqrt3, 2.0 / 3.0, 0.0, -1.0 / 3.0, _sqrt3 / 3.0, 0);
@@ -26,9 +26,6 @@ abstract class HexbinLayout extends ChartLayout{
   ///Hex(0,0,0)的位置
   Offset _zeroCenter = Offset.zero;
 
-  num width = 0;
-  num height = 0;
-
   HexbinLayout({
     this.center = const [SNumber.percent(50), SNumber.percent(50)],
     this.flat = true,
@@ -36,22 +33,18 @@ abstract class HexbinLayout extends ChartLayout{
   });
 
   /// 子类一般情况下不应该重写改方法
-  @mustCallSuper
-  void doLayout(Context context,HexbinSeries series, List<HexbinNode> nodes, num width, num height) {
-    this.width = width;
-    this.height = height;
-    onLayout(series, nodes, width, height);
+  @override
+  void doLayout(Context context, HexbinSeries series, List<HexbinNode> data, Rect rect, LayoutAnimatorType type) {
+    super.doLayout(context, series, data, rect, type);
     num angleOffset = flat ? _flat.angle : _pointy.angle;
     _zeroCenter = computeZeroCenter(series, width, height);
     Size size = Size.square(radius * 1);
-    each(nodes, (node, i) {
+    each(data, (node, i) {
       node.center = hexToPixel(_zeroCenter, node.hex, size);
       num r = series.radiusFun?.call(node) ?? radius;
       node.shape = PositiveShape(center: node.center, r: r, count: 6, angleOffset: angleOffset);
     });
   }
-
-  void onLayout(HexbinSeries series, List<HexbinNode> nodes, num width, num height);
 
   ///计算Hex(0，0，0)节点的中心位置(其它节点需要根据该节点位置来计算当前位置)
   ///子类可以复写该方法实现不同的位置中心

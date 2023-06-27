@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:chart_xutil/chart_xutil.dart';
 import 'package:e_chart/e_chart.dart';
 import 'package:e_chart_ext/src/hexbin/hex_bin_node.dart';
-import 'package:e_chart_ext/src/hexbin/hex_bin_series.dart';
 import 'package:e_chart_ext/src/hexbin/layout/hex_layout.dart';
 
 import '../hex.dart';
@@ -21,10 +20,10 @@ class HexParallelLayout extends HexbinLayout {
   HexParallelLayout({this.type = 0, super.center, super.flat, super.radius});
 
   @override
-  void onLayout(HexbinSeries series, List<HexbinNode> nodes, num width, num height) {
-    row = computeRow(nodes.length);
-    col=nodes.length~/row;
-    if(row*col<nodes.length){
+  void onLayout(List<HexbinNode> data, LayoutAnimatorType type) {
+    row = computeRow(data.length);
+    col=data.length~/row;
+    if(row*col<data.length){
       col+=1;
     }
     int s = -row ~/ 2;
@@ -39,7 +38,7 @@ class HexParallelLayout extends HexbinLayout {
 
     Pair<int> p = Pair(s, e);
     List<Hex> hexList = parallelograms(p, p);
-    each(nodes, (node, i) {
+    each(data, (node, i) {
       node.hex = hexList[i];
     });
   }

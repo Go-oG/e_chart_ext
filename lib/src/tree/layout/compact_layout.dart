@@ -28,7 +28,7 @@ class CompactLayout extends TreeLayout {
   });
 
   @override
-  void onLayout(Context context, TreeLayoutNode root, num width, num height) {
+  void onLayout2(TreeLayoutNode root) {
     var l = _InnerLayout(root, direction: direction, levelGapFun: levelGapFun, gapFun: gapFun, levelAlign: levelAlign);
     l.layout(width, height);
   }
@@ -38,8 +38,8 @@ class _InnerLayout {
   late final TreeLayoutNode root;
   final Direction2 direction;
   final Align2 levelAlign;
-  Fun2<TreeLayoutNode, TreeLayoutNode, Offset>? gapFun;
-  Fun2<int, int, num>? levelGapFun;
+  Fun3<TreeLayoutNode, TreeLayoutNode, Offset>? gapFun;
+  Fun3<int, int, num>? levelGapFun;
 
   ///存储数据运算
   final List<double> _sizeOfLevel = [];

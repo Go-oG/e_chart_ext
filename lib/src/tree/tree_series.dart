@@ -9,9 +9,9 @@ class TreeSeries extends RectSeries {
   TreeData data;
   TreeLayout layout;
   SelectedMode selectedMode;
-  StyleFun2<TreeLayoutNode, Size, ChartSymbol> symbolFun;
-  StyleFun<TreeLayoutNode, LabelStyle>? labelStyleFun;
-  StyleFun2<TreeLayoutNode, TreeLayoutNode, LineStyle> lineStyleFun;
+  Fun3<TreeLayoutNode, Size, ChartSymbol> symbolFun;
+  Fun2<TreeLayoutNode, LabelStyle>? labelStyleFun;
+  Fun3<TreeLayoutNode, TreeLayoutNode, LineStyle> lineStyleFun;
 
   TreeSeries(
     this.data,

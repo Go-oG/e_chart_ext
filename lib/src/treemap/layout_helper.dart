@@ -11,24 +11,24 @@ class LayoutHelper {
   late TreemapLayout _layout;
   bool _round = true;
   Map<int, num> _paddingStack = {};
-  Fun2<TreeMapNode, TreeMapNode, int>? _sort;
+  Fun3<TreeMapNode, TreeMapNode, int>? _sort;
 
   ///内部Children之间的间隔
-  Fun1<TreeMapNode, num> _paddingInner = (a) {
+  Fun2<TreeMapNode, num> _paddingInner = (a) {
     return 0;
   };
 
   ///自身的内容间距
-  Fun1<TreeMapNode, num> _paddingTop = (a) {
+  Fun2<TreeMapNode, num> _paddingTop = (a) {
     return 0;
   };
-  Fun1<TreeMapNode, num> _paddingRight = (a) {
+  Fun2<TreeMapNode, num> _paddingRight = (a) {
     return 0;
   };
-  Fun1<TreeMapNode, num> _paddingBottom = (a) {
+  Fun2<TreeMapNode, num> _paddingBottom = (a) {
     return 0;
   };
-  Fun1<TreeMapNode, num> _paddingLeft = (a) {
+  Fun2<TreeMapNode, num> _paddingLeft = (a) {
     return 0;
   };
 
@@ -51,14 +51,13 @@ class LayoutHelper {
     }
   }
 
-
-  TreeMapNode layout(Context context,TreeMapNode root, Rect rect) {
+  TreeMapNode layout(Context context, TreeMapNode root, Rect rect) {
     root.setPosition(rect);
     if (_sort != null) {
       root.sort(_sort!, false);
     }
     root.eachBefore((node, index, startNode) {
-      _layoutNodeChildren(context,node);
+      _layoutNodeChildren(context, node);
       return false;
     });
     _paddingStack = {};
@@ -69,8 +68,9 @@ class LayoutHelper {
   }
 
   ///布局该节点(不包含子节点)
-  void _layoutNodeChildren(Context context,TreeMapNode node) {
+  void _layoutNodeChildren(Context context, TreeMapNode node) {
     var p = _paddingStack[node.deep] ?? 0;
+
     ///处理自身的padding
     var rect = node.getPosition();
     var x0 = rect.left + p;
@@ -79,7 +79,7 @@ class LayoutHelper {
     var y1 = rect.bottom - p;
     if (x1 < x0) x0 = x1 = (x0 + x1) / 2;
     if (y1 < y0) y0 = y1 = (y0 + y1) / 2;
-    node.setPosition( Rect.fromLTRB(x0, y0, x1, y1));
+    node.setPosition(Rect.fromLTRB(x0, y0, x1, y1));
     rect = node.getPosition();
     if (node.hasChild) {
       ///布局孩子
@@ -90,7 +90,8 @@ class LayoutHelper {
       y1 -= _paddingBottom(node) - p;
       if (x1 < x0) x0 = x1 = (x0 + x1) / 2;
       if (y1 < y0) y0 = y1 = (y0 + y1) / 2;
-      _layout.doLayout(context,node, Rect.fromLTRB(x0, y0, x1, y1));
+
+      _layout.doLayout(context, series, node, Rect.fromLTRB(x0, y0, x1, y1), LayoutAnimatorType.layout);
     }
   }
 
@@ -106,17 +107,17 @@ class LayoutHelper {
 
   set round(bool v) => _round = v;
 
-  set paddingInner(Fun1<TreeMapNode, num> fun) => _paddingInner = fun;
+  set paddingInner(Fun2<TreeMapNode, num> fun) => _paddingInner = fun;
 
-  set paddingTop(Fun1<TreeMapNode, num> fun) => _paddingTop = fun;
+  set paddingTop(Fun2<TreeMapNode, num> fun) => _paddingTop = fun;
 
-  set paddingRight(Fun1<TreeMapNode, num> fun) => _paddingRight = fun;
+  set paddingRight(Fun2<TreeMapNode, num> fun) => _paddingRight = fun;
 
-  set paddingBottom(Fun1<TreeMapNode, num> fun) => _paddingBottom = fun;
+  set paddingBottom(Fun2<TreeMapNode, num> fun) => _paddingBottom = fun;
 
-  set paddingLeft(Fun1<TreeMapNode, num> fun) => _paddingLeft = fun;
+  set paddingLeft(Fun2<TreeMapNode, num> fun) => _paddingLeft = fun;
 
-  LayoutHelper sort(Fun2<TreeMapNode, TreeMapNode, int> fun) {
+  LayoutHelper sort(Fun3<TreeMapNode, TreeMapNode, int> fun) {
     _sort = fun;
     return this;
   }

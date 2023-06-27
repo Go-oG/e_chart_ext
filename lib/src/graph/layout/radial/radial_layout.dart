@@ -41,7 +41,7 @@ class RadialLayout extends GraphLayout {
   /// 同层节点根据sort函数排列的强度，值越大，sortBy计算出的距离越靠近
   num sortStrength;
 
-  Fun2<GraphNode, num, num>? sortBy = (node, v) {
+  Fun3<GraphNode, num, num>? sortBy = (node, v) {
     return v;
   };
 
@@ -66,14 +66,14 @@ class RadialLayout extends GraphLayout {
   });
 
   @override
-  void doLayout(Context context, Graph graph, num width, num height) {
+  void onLayout(Graph data, LayoutAnimatorType type) {
     if (workerThread) {
       Future.doWhile(() {
-        runLayout(context, graph, width, height);
+        runLayout(context, data, width, height);
         return false;
       });
     } else {
-      runLayout(context, graph, width, height);
+      runLayout(context, data, width, height);
     }
   }
 
@@ -102,7 +102,7 @@ class RadialLayout extends GraphLayout {
       workerThread: false,
       nodeSpaceFun: nodeSpaceFun,
     );
-    gridLayout.doLayout(context, graph, width, height);
+    gridLayout.doLayout(context, series, graph, rect, LayoutAnimatorType.none);
 
     // 计算focusNode和其索引
     GraphNode focusNode = this.focusNode ?? nodes.first;

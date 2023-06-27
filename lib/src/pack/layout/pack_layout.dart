@@ -1,48 +1,45 @@
 import 'dart:math' as m;
 import 'dart:ui';
-import 'package:e_chart/e_chart.dart';
-
-import '../../graph/layout/force/lcg.dart';
-import '../pack_node.dart';
+import 'package:e_chart_ext/e_chart_ext.dart';
 import 'siblings.dart';
 
-class PackLayout extends ChartLayout{
-  Fun1<PackNode, num>? _radiusFun;
+class PackLayout extends ChartLayout<PackSeries, PackNode> {
+  Fun2<PackNode, num>? _radiusFun;
   Rect _rect = const Rect.fromLTWH(0, 0, 1, 1);
   num _dx = 1;
   num _dy = 1;
-  Fun1<PackNode, num> _paddingFun = (a) {
+  Fun2<PackNode, num> _paddingFun = (a) {
     return 3;
   };
 
-  PackNode doLayout(Context context,PackNode root) {
+  @override
+  void onLayout(PackNode data, LayoutAnimatorType type) {
     LCG random = DefaultLCG();
-    root.props.x = _dx / 2;
-    root.props.y = _dy / 2;
+    data.props.x = _dx / 2;
+    data.props.y = _dy / 2;
     if (_radiusFun != null) {
-      root.eachBefore(_radiusLeaf(_radiusFun!)).eachAfter(_packChildrenRandom(_paddingFun, 0.5, random)).eachBefore(_translateChild(1));
+      data.eachBefore(_radiusLeaf(_radiusFun!)).eachAfter(_packChildrenRandom(_paddingFun, 0.5, random)).eachBefore(_translateChild(1));
     } else {
-      root
+      data
           .eachBefore(_radiusLeaf(_defaultRadius))
           .eachAfter(_packChildrenRandom((e) {
             return 0;
           }, 1, random))
-          .eachAfter(_packChildrenRandom(_paddingFun, root.props.r / m.min(_dx, _dy), random))
-          .eachBefore(_translateChild(m.min(_dx, _dy) / (2 * root.props.r)));
+          .eachAfter(_packChildrenRandom(_paddingFun, data.props.r / m.min(_dx, _dy), random))
+          .eachBefore(_translateChild(m.min(_dx, _dy) / (2 * data.props.r)));
     }
 
     ///修正位置
     if (_rect.left != 0 || _rect.top != 0) {
-      root.each((p0, p1, p2) {
+      data.each((p0, p1, p2) {
         p0.props.x += _rect.left;
         p0.props.y += _rect.top;
         return false;
       });
     }
-    return root;
   }
 
-  PackLayout radius(Fun1<PackNode, num> fun1) {
+  PackLayout radius(Fun2<PackNode, num> fun1) {
     _radiusFun = fun1;
     return this;
   }
@@ -54,7 +51,7 @@ class PackLayout extends ChartLayout{
     return this;
   }
 
-  PackLayout padding(Fun1<PackNode, num> fun1) {
+  PackLayout padding(Fun2<PackNode, num> fun1) {
     _paddingFun = fun1;
     return this;
   }
@@ -64,7 +61,7 @@ double _defaultRadius(PackNode d) {
   return m.sqrt(d.value);
 }
 
-bool Function(PackNode, int, PackNode) _radiusLeaf(Fun1<PackNode, num> radiusFun) {
+bool Function(PackNode, int, PackNode) _radiusLeaf(Fun2<PackNode, num> radiusFun) {
   return (PackNode node, int b, PackNode c) {
     if (node.notChild) {
       double r = m.max(0, radiusFun.call(node)).toDouble();
@@ -74,7 +71,7 @@ bool Function(PackNode, int, PackNode) _radiusLeaf(Fun1<PackNode, num> radiusFun
   };
 }
 
-bool Function(PackNode, int, PackNode) _packChildrenRandom(Fun1<PackNode, num> paddingFun, num k, LCG random) {
+bool Function(PackNode, int, PackNode) _packChildrenRandom(Fun2<PackNode, num> paddingFun, num k, LCG random) {
   return (PackNode node, int b, PackNode c) {
     List<PackNode> children = node.children;
     if (children.isNotEmpty) {

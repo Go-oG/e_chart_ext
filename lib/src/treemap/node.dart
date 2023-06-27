@@ -1,10 +1,11 @@
 import 'dart:ui';
 
 import 'package:chart_xutil/chart_xutil.dart';
+import 'package:e_chart/e_chart.dart';
 
 import '../model/tree_data.dart';
 
-class TreeMapNode extends TreeNode<TreeMapNode> {
+class TreeMapNode extends TreeNode<TreeMapNode> with ViewStateProvider {
   final TreeData data;
   NodeProps cur = NodeProps(); // 当前对象
   NodeProps start = NodeProps(); //动画开始帧

@@ -74,71 +74,71 @@ class SunburstView extends SeriesView<SunburstSeries> {
 
   ///前进
   void _forward(SunburstNode clickNode) {
-    bool hasOldBackNode = backNode != null;
-    var oldBackNode = backNode;
-    backNode = SunburstNode(null, clickNode.data);
-    backNode!.cur = SunburstInfo(_layout.buildBackArc(root, clickNode));
-    if (hasOldBackNode) {
-      backNode!.start = oldBackNode!.start;
-      backNode!.end = backNode!.cur.copy();
-    } else {
-      Arc arc = backNode!.cur.arc;
-      Arc startArc = arc.copy(outRadius: arc.innerRadius);
-      backNode!.start = SunburstInfo(startArc);
-      backNode!.end = SunburstInfo(arc.copy());
-    }
-    clickNode.each((node, index, startNode) {
-      node.start = node.cur.copy();
-      return false;
-    });
-    _layout.doLayout(context, series, root, clickNode, width, height);
-    clickNode.each((node, index, startNode) {
-      node.end = node.cur.copy();
-      return false;
-    });
-    _drawRoot = clickNode;
-    executeTween(clickNode, backNode);
+    // bool hasOldBackNode = backNode != null;
+    // var oldBackNode = backNode;
+    // backNode = SunburstNode(null, clickNode.data);
+    // backNode!.cur = SunburstInfo(_layout.buildBackArc(root, clickNode));
+    // if (hasOldBackNode) {
+    //   backNode!.start = oldBackNode!.start;
+    //   backNode!.end = backNode!.cur.copy();
+    // } else {
+    //   Arc arc = backNode!.cur.arc;
+    //   Arc startArc = arc.copy(outRadius: arc.innerRadius);
+    //   backNode!.start = SunburstInfo(startArc);
+    //   backNode!.end = SunburstInfo(arc.copy());
+    // }
+    // clickNode.each((node, index, startNode) {
+    //   node.start = node.cur.copy();
+    //   return false;
+    // });
+    // _layout.doLayout(context, series, root, clickNode, width, height);
+    // clickNode.each((node, index, startNode) {
+    //   node.end = node.cur.copy();
+    //   return false;
+    // });
+    // _drawRoot = clickNode;
+    // executeTween(clickNode, backNode);
   }
 
   ///后退
   void back() {
-    if (_drawRoot.parent == null) {
-      backNode = null;
-      return;
-    }
-    var oldBackNode = backNode;
-    backNode = null;
-    SunburstNode rootNode = _drawRoot.parent!;
-    rootNode.each((node, index, startNode) {
-      node.start = node.cur.copy();
-      return false;
-    });
-    if (rootNode.parent != null) {
-      backNode = SunburstNode(null, _drawRoot.data);
-      backNode!.cur = SunburstInfo(_layout.buildBackArc(root, rootNode));
-      if (oldBackNode != null) {
-        backNode!.start = oldBackNode.cur;
-        backNode!.end = backNode!.cur.copy();
-      } else {
-        Arc arc = backNode!.cur.arc;
-        Arc copyArc = arc.copy(outRadius: arc.innerRadius);
-        backNode!.start = SunburstInfo(copyArc);
-        backNode!.end = backNode!.cur.copy();
-      }
-    }
-
-    ///布局
-    _layout.doLayout(context, series, root, rootNode, width, height);
-    rootNode.each((node, index, startNode) {
-      node.end = node.cur.copy();
-      return false;
-    });
-
-    ///节点替换
-    _drawRoot = rootNode;
-
-    ///执行动画
-    executeTween(rootNode, backNode);
+    // if (_drawRoot.parent == null) {
+    //   backNode = null;
+    //   return;
+    // }
+    // var oldBackNode = backNode;
+    // backNode = null;
+    // SunburstNode rootNode = _drawRoot.parent!;
+    // rootNode.each((node, index, startNode) {
+    //   node.start = node.cur.copy();
+    //   return false;
+    // });
+    // if (rootNode.parent != null) {
+    //   backNode = SunburstNode(null, _drawRoot.data);
+    //   backNode!.cur = SunburstInfo(_layout.buildBackArc(root, rootNode));
+    //   if (oldBackNode != null) {
+    //     backNode!.start = oldBackNode.cur;
+    //     backNode!.end = backNode!.cur.copy();
+    //   } else {
+    //     Arc arc = backNode!.cur.arc;
+    //     Arc copyArc = arc.copy(outRadius: arc.innerRadius);
+    //     backNode!.start = SunburstInfo(copyArc);
+    //     backNode!.end = backNode!.cur.copy();
+    //   }
+    // }
+    //
+    // ///布局
+    // _layout.doLayout(context, series, root, rootNode, width, height);
+    // rootNode.each((node, index, startNode) {
+    //   node.end = node.cur.copy();
+    //   return false;
+    // });
+    //
+    // ///节点替换
+    // _drawRoot = rootNode;
+    //
+    // ///执行动画
+    // executeTween(rootNode, backNode);
   }
 
   ///执行动画
@@ -146,10 +146,8 @@ class SunburstView extends SeriesView<SunburstSeries> {
 
   void executeTween(SunburstNode node, [SunburstNode? other]) {
     _oldTween?.stop();
-    Duration duration = const Duration(milliseconds: 800);
-    Curve curve = Curves.linear;
-    ChartDoubleTween tween = ChartDoubleTween(0, 1, duration: duration, curve: curve);
-    SunburstTween tweenTmp = SunburstTween(node.start, node.end, duration: duration, curve: curve);
+    ChartDoubleTween tween = ChartDoubleTween(props: series.animatorProps);
+    SunburstTween tweenTmp = SunburstTween(node.start, node.end, props: series.animatorProps);
     tween.addListener(() {
       double percent = tween.value;
       node.each((tmp, index, startNode) {
@@ -173,7 +171,7 @@ class SunburstView extends SeriesView<SunburstSeries> {
   void onLayout(double left, double top, double right, double bottom) {
     super.onLayout(left, top, right, bottom);
     convertData();
-    _layout.doLayout(context, series, root, root, width, height);
+    _layout.doLayout(context, series, root, selfBoxBound, LayoutAnimatorType.layout);
     _drawRoot = root;
   }
 
@@ -211,7 +209,7 @@ class SunburstView extends SeriesView<SunburstSeries> {
     if (info == null) {
       return;
     }
-    ChartDoubleTween tween = ChartDoubleTween.fromAnimator(info);
+    ChartDoubleTween tween = ChartDoubleTween(props: series.animatorProps);
     tween.addListener(() {
       double v = tween.value;
       _drawRoot.each((node, index, startNode) {
@@ -245,9 +243,9 @@ class SunburstView extends SeriesView<SunburstSeries> {
     if (node == root) {
       return;
     }
-    AreaStyle? style = series.areaStyleFun.call(node, null);
+    AreaStyle? style = series.areaStyleFun.call(node);
     // style?.drawPath(canvas, mPaint, node.cur.shapePath!, colorOpacity: node.cur.alpha >= 1 ? null : node.cur.alpha);
-    style?.drawPath(canvas, mPaint, node.cur.shapePath!);
+    style.drawPath(canvas, mPaint, node.cur.shapePath!);
   }
 
   void _drawText(Canvas canvas, SunburstNode node) {
@@ -255,7 +253,7 @@ class SunburstView extends SeriesView<SunburstSeries> {
     if (node.data.label == null || node.data.label!.isEmpty) {
       return;
     }
-    LabelStyle? style = series.labelStyleFun?.call(node, null);
+    LabelStyle? style = series.labelStyleFun?.call(node);
     if (style == null || arc.sweepAngle <= style.minAngle) {
       return;
     }

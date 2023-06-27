@@ -23,7 +23,7 @@ class GraphGridLayout extends GraphLayout {
   bool preventOverlap;
 
   ///位置函数(可用于固定位置)
-  Fun3<GraphNode, int, int, m.Point<int>?>? positionFun;
+  Fun4<GraphNode, int, int, m.Point<int>?>? positionFun;
 
   GraphGridLayout({
     this.rows,
@@ -41,16 +41,16 @@ class GraphGridLayout extends GraphLayout {
   ///============布局使用的数值======
 
   @override
-  void doLayout(Context context, Graph graph, num width, num height) {
+  void onLayout(Graph data, LayoutAnimatorType type) {
     stopLayout();
     clearInterrupt();
     if (workerThread) {
       Future.doWhile(() {
-        runLayout(context, graph, width, height);
+        runLayout(context, data, width, height);
         return false;
       });
     } else {
-      runLayout(context, graph, width, height);
+      runLayout(context, data, width, height);
     }
   }
 
@@ -113,7 +113,7 @@ class GraphGridLayout extends GraphLayout {
 
     // 防重叠处理(重新计算格子宽度)
     if (preventOverlap || nodeSpaceFun != null) {
-      Fun1<GraphNode, num> spaceFun = nodeSpaceFun ?? (a) => 10;
+      Fun2<GraphNode, num> spaceFun = nodeSpaceFun ?? (a) => 10;
       for (var node in layoutNodes) {
         checkInterrupt();
         Size res = getNodeSize(node);

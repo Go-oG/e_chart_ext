@@ -34,17 +34,17 @@ class ThemeRiverView extends SeriesView<ThemeRiverSeries> {
         element.index = 0;
       }
     }
-    ChartDoubleTween tween = ChartDoubleTween(0, 1, duration: const Duration(milliseconds: 200));
+    ChartDoubleTween tween = ChartDoubleTween(props: series.animatorProps);
     AreaStyleTween? selectTween;
     AreaStyleTween? unselectTween;
     if (selectNode != null && selectNode.style != null) {
-      selectTween = AreaStyleTween(selectNode.style!, series.areaStyleFun.call(selectNode.data, HoverAction())!);
+      selectTween = AreaStyleTween(selectNode.style!, series.areaStyleFun.call(selectNode.data));
       selectNode.index = 100;
     }
     LayoutNode? oldNode = oldHoverNode;
     oldHoverNode = selectNode;
     if (oldNode != null && oldNode.style != null) {
-      unselectTween = AreaStyleTween(oldNode.style!, series.areaStyleFun.call(oldNode.data, null)!);
+      unselectTween = AreaStyleTween(oldNode.style!, series.areaStyleFun.call(oldNode.data));
       oldNode.index = 0;
     }
     nodeList.sort((a, b) {
@@ -115,7 +115,7 @@ class ThemeRiverView extends SeriesView<ThemeRiverSeries> {
   @override
   void onLayout(double left, double top, double right, double bottom) {
     super.onLayout(left, top, right, bottom);
-    layer.doLayout(context, series, nodeList, width, height);
+    layer.doLayout(context, series, nodeList, selfBoxBound,LayoutAnimatorType.layout);
     tx = ty = 0;
     doAnimator();
   }
@@ -125,7 +125,7 @@ class ThemeRiverView extends SeriesView<ThemeRiverSeries> {
     if (info == null) {
       return;
     }
-    ChartDoubleTween tween = ChartDoubleTween.fromAnimator(info);
+    ChartDoubleTween tween = ChartDoubleTween();
     tween.addListener(() {
       animatorPercent = tween.value;
       invalidate();
@@ -143,8 +143,8 @@ class ThemeRiverView extends SeriesView<ThemeRiverSeries> {
       canvas.clipRect(Rect.fromLTWH(tx.abs(), ty.abs(), width, height * animatorPercent));
     }
     for (var ele in nodeList) {
-      AreaStyle? style = ele.style ?? series.areaStyleFun.call(ele.data, ele.cur.hover ? HoverAction() : null);
-      style?.drawPath(canvas, mPaint, ele.drawPath);
+      AreaStyle style = ele.style ?? series.areaStyleFun.call(ele.data);
+      style.drawPath(canvas, mPaint, ele.drawPath);
     }
     //这里拆分开是为了避免文字被遮挡
     for (var element in nodeList) {
@@ -159,7 +159,7 @@ class ThemeRiverView extends SeriesView<ThemeRiverSeries> {
     if (label == null || label.isEmpty) {
       return;
     }
-    LabelStyle? style = node.labelStyle ?? series.labelStyleFun?.call(node.data, node.cur.hover ? HoverAction() : null);
+    LabelStyle? style = node.labelStyle ?? series.labelStyleFun?.call(node.data);
     if (style == null) {
       return;
     }
