@@ -7,7 +7,6 @@ import 'pack_node.dart';
 class PackSeries extends RectSeries {
   TreeData data;
   bool optTextDraw;
-  Color? backgroundColor;
   Fun2<PackNode, AreaStyle> areaStyleFun;
   Fun2<PackNode, LabelStyle?>? labelStyleFun;
   Fun2<PackNode, num>? paddingFun;
@@ -23,7 +22,6 @@ class PackSeries extends RectSeries {
     this.labelStyleFun,
     this.paddingFun,
     this.sortFun,
-    this.backgroundColor,
     this.onClick,
     super.leftMargin,
     super.topMargin,
@@ -32,6 +30,8 @@ class PackSeries extends RectSeries {
     super.width,
     super.height,
     super.animation,
+    super.backgroundColor,
+    super.id,
     super.enableClick,
     super.enableDrag,
     super.enableHover,

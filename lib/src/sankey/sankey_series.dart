@@ -33,6 +33,8 @@ class SankeySeries extends RectSeries {
     super.width,
     super.height,
     super.tooltip,
+    super.backgroundColor,
+    super.id,
     super.animation,
     super.enableClick,
     super.enableDrag,

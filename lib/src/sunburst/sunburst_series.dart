@@ -61,6 +61,8 @@ class SunburstSeries extends RectSeries {
     super.enableDrag,
     super.enableHover,
     super.enableScale,
+    super.backgroundColor,
+    super.id,
     super.clip,
     super.z,
   }) : super(xAxisIndex: -1, yAxisIndex: -1, polarAxisIndex: -1, parallelIndex: -1, calendarIndex: -1, radarIndex: -1);

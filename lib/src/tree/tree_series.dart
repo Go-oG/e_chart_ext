@@ -28,6 +28,8 @@ class TreeSeries extends RectSeries {
     super.height,
     super.tooltip,
     super.animation,
+    super.backgroundColor,
+    super.id,
     super.enableClick,
     super.enableDrag = true,
     super.enableHover,

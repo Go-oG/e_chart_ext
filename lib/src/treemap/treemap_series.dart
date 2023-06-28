@@ -58,6 +58,8 @@ class TreeMapSeries extends RectSeries {
     super.height,
     super.tooltip,
     super.animation,
+    super.backgroundColor,
+    super.id,
     super.enableClick = true,
     super.enableDrag = true,
     super.enableHover,

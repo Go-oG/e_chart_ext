@@ -32,6 +32,8 @@ class HexbinSeries extends RectSeries {
     super.enableDrag,
     super.enableHover,
     super.enableScale,
+    super.backgroundColor,
+    super.id,
     super.z,
   }) : super(
           coordSystem: null,

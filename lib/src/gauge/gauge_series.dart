@@ -6,7 +6,7 @@ import 'gauge_point.dart';
 class GaugeSeries extends RectSeries {
   SNumber radius;
   List<SNumber> center;
-  List<AngleAxis> axisList;
+  List<AngleAxis> axisList = [AngleAxis()];
   List<GaugeData> groupList;
   Fun2<GaugeData, LabelStyle>? labelStyleFun;
 
@@ -14,7 +14,7 @@ class GaugeSeries extends RectSeries {
     this.radius = const SNumber(75, true),
     this.center = const [SNumber(50, true), SNumber(50, true)],
     required this.groupList,
-    this.axisList = const [AngleAxis()],
+    List<AngleAxis>? axisList,
     this.labelStyleFun,
     super.leftMargin,
     super.topMargin,
@@ -29,6 +29,8 @@ class GaugeSeries extends RectSeries {
     super.enableDrag,
     super.enableHover,
     super.enableScale,
+    super.backgroundColor,
+    super.id,
     super.z,
   }) : super(
           coordSystem: null,
@@ -38,7 +40,11 @@ class GaugeSeries extends RectSeries {
           parallelIndex: -1,
           radarIndex: -1,
           calendarIndex: -1,
-        );
+        ) {
+    if (axisList != null) {
+      this.axisList = axisList;
+    }
+  }
 }
 
 class GaugeProgress {
@@ -47,7 +53,7 @@ class GaugeProgress {
   bool overlap;
   bool roundCap;
   bool clip;
-  Fun2<double,String>? formatter;
+  Fun2<double, String>? formatter;
   Fun2<double, LineStyle>? styleFun;
   LineStyle? backgroundStyle;
   GaugeProgress? progress;
